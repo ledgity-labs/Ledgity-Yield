@@ -82,12 +82,31 @@ const base: Chain = {
   testnet: false,
 };
 
+const ethereum: Chain = {
+  id: 1,
+  name: "Ethereum",
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://eth.llamarpc.com"],
+    },
+  },
+  blockExplorers: {
+    default: { name: "Etherscan", url: "https://etherscan.io/" },
+  },
+  testnet: false,
+};
+
 /// Figure whether we're in dev or prod environment
 const chainsEnv = process.env.NEXT_PUBLIC_VERCEL_ENV === "dev" ? "dev" : "prod";
 
 // Build chain lists for each environment, and export chains for the current one
 const prodChains: readonly [Chain, ...Chain[]] = [
-  mainnet,
+  ethereum,
   arbitrum,
   base,
   linea,
