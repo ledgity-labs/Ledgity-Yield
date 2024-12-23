@@ -17,20 +17,12 @@ interface Props extends React.ComponentPropsWithoutRef<typeof TxButton> {
   amount?: bigint;
   preparation: UseSimulateContractReturnType;
   transactionSummary?: string | ReactNode;
-  // This prevents displaying errors when user hasn't interacted with the button or input yet
   hasUserInteracted?: boolean;
-
-  // Allow parent to force error state
   parentIsError?: boolean;
   parentError?: string;
-
-  // Allow 0 amount
   allowZeroAmount?: boolean;
 }
-/**
- * A version of the TxButton that allows to ensure and set (if needed) a given ERC20 allowance before
- * signing the transaction.
- */
+
 export const AllowanceTxButton: FC<Props> = ({
   token,
   spender,
@@ -45,30 +37,39 @@ export const AllowanceTxButton: FC<Props> = ({
   className,
   ...props
 }) => {
-  const account = useAccount();
+  const { address: accountAddress, isConnected } = useAccount();
   const [hasEnoughAllowance, setHasEnoughAllowance] = useState(false);
+  const [error, setError] = useState<{ isError: boolean; message: string }>({
+    isError: false,
+    message: "",
+  });
+
   const { data: symbol } = useReadContract({
     abi: erc20Abi,
     functionName: "symbol",
     address: token,
   });
+
   const { data: decimals } = useReadContract({
     abi: erc20Abi,
     functionName: "decimals",
     address: token,
   });
+
   const { data: allowance, queryKey: allowanceQueryKey } = useReadContract({
     abi: erc20Abi,
     functionName: "allowance",
     address: token,
-    args: [account.address || zeroAddress, spender],
+    args: [accountAddress || zeroAddress, spender],
   });
+
   const { data: balance, queryKey: balanceQueryKey } = useReadContract({
     abi: erc20Abi,
     functionName: "balanceOf",
     address: token,
-    args: [account.address || zeroAddress],
+    args: [accountAddress || zeroAddress],
   });
+
   const allowancePreparation = useSimulateContract({
     abi: erc20Abi,
     functionName: "approve",
@@ -76,22 +77,24 @@ export const AllowanceTxButton: FC<Props> = ({
     args: [spender, amount],
   });
 
-  // Set hasEnoughAllowance when allowance or amount chanages
+  // Update error state
   useEffect(() => {
-    preparation.refetch();
-    setHasEnoughAllowance(allowance !== undefined && allowance >= amount);
-  }, [allowance, amount]);
-
-  // Check if the user has enough balance, and raise error else
-  let isError = false;
-  let errorMessage: string = "";
-
-  useEffect(() => {
-    if (!balance || balance < amount) {
-      isError = true;
-      errorMessage = "Insufficient balance";
+    if (!isConnected) {
+      setError({ isError: true, message: "No wallet connected" });
+    } else if (!balance || balance < amount) {
+      setError({ isError: true, message: "Insufficient balance" });
+    } else {
+      setError({ isError: false, message: "" });
     }
-  }, [balance, amount]);
+  }, [isConnected, balance, amount]);
+
+  // Update allowance state
+  useEffect(() => {
+    if (isConnected && allowance !== undefined) {
+      preparation.refetch();
+      setHasEnoughAllowance(allowance >= amount);
+    }
+  }, [isConnected, allowance, amount, preparation]);
 
   return (
     <div>
@@ -105,8 +108,8 @@ export const AllowanceTxButton: FC<Props> = ({
         preparation={preparation}
         disabled={(amount === 0n && !allowZeroAmount) || disabled}
         transactionSummary={transactionSummary}
-        parentIsError={isError}
-        parentError={errorMessage}
+        parentIsError={error.isError}
+        parentError={error.message}
         queryKeys={[balanceQueryKey, allowanceQueryKey]}
         {...props}
       />
@@ -121,8 +124,8 @@ export const AllowanceTxButton: FC<Props> = ({
         }
         disabled={(amount === 0n && !allowZeroAmount) || disabled}
         hasUserInteracted={hasUserInteracted}
-        parentIsError={parentIsError || isError}
-        parentError={parentIsError ? parentError : errorMessage}
+        parentIsError={parentIsError || error.isError}
+        parentError={parentError || error.message}
         transactionSummary={
           <span>
             Allow Ledgity Yield to use{" "}
