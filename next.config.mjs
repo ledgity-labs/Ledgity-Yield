@@ -9,8 +9,12 @@ const nextConfig = {
     // typedRoutes: true, // Enable internal link type-checking (see: https://nextjs.org/docs/pages/building-your-application/configuring/typescript#statically-typed-links)
   },
   // Require by Wagmi work in Next.js client components
-  webpack: (config) => {
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.devtool = "eval-source-map"; // This is more reliable than 'source-map'
+    }
     config.resolve.fallback = { fs: false, net: false, tls: false };
+
     // config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
