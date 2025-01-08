@@ -170,7 +170,7 @@ export const TxButton: FC<Props> = ({
               >
                 <li className="flex items-center justify-start gap-2">
                   {/* Write Transaction - Pending State */}
-                  {!isWriteError && !isWriteSuccess && (
+                  {isWritePending && !isWriteError && !isWriteSuccess && (
                     <>
                       <Card
                         radius="full"
