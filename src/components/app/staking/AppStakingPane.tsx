@@ -56,6 +56,7 @@ export const AppStakingPane: FC<{
   const preparation = useSimulateLdyStakingStake({
     args: [depositedAmount, stakeOptionIndex],
   });
+
   return (
     <div className="flex flex-col w-full p-4 gap-y-2 h-full">
       <div className="font-heading font-bold text-xl">

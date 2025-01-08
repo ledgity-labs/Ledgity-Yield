@@ -75,7 +75,7 @@ export const TxButton: FC<Props> = ({
     if (accountAddress) {
       preparation.refetch();
     }
-  }, [accountAddress, publicClient]);
+  }, [accountAddress]);
 
   useEffect(() => {
     if (isWriteSuccess && isConfirmSuccess) {
@@ -169,71 +169,109 @@ export const TxButton: FC<Props> = ({
                 )}
               >
                 <li className="flex items-center justify-start gap-2">
-                  <Card
-                    radius="full"
-                    className={twMerge(
-                      "flex h-10 w-10 items-center justify-center rounded-full text-xl before:bg-slate-300",
-                      isWritePending && "before:bg-primary/75",
-                      isWriteError && "before:bg-red-500/75",
-                      isWriteSuccess && "before:bg-green-500/75",
-                    )}
-                  >
-                    <span className="font-bold text-primary-fg">
-                      {isWritePending && <Spinner />}
-                      {isWriteError && <i className="ri-close-fill text-xl" />}
-                      {isWriteSuccess && (
-                        <i className="ri-check-fill text-xl" />
-                      )}
-                    </span>
-                  </Card>
-                  <p
-                    className={twMerge(
-                      "text-lg font-medium text-slate-400",
-                      isWritePending && "text-fg/90",
-                      isWriteError && "text-red-600/75",
-                      isWriteSuccess && "opacity-80 grayscale-[100%]",
-                    )}
-                  >
-                    {isWritePending && "Sign transaction from your wallet"}
-                    {isWriteError && "Wallet rejected the request"}
-                    {isWriteSuccess && "Wallet signature successful"}
-                  </p>
+                  {/* Write Transaction - Pending State */}
+                  {!isWriteError && !isWriteSuccess && (
+                    <>
+                      <Card
+                        radius="full"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-xl before:bg-slate-300 before:bg-primary/75"
+                      >
+                        <span className="font-bold text-primary-fg">
+                          <Spinner />
+                        </span>
+                      </Card>
+                      <p className="text-lg font-medium text-slate-400 text-fg/90">
+                        Sign transaction from your wallet
+                      </p>
+                    </>
+                  )}
+
+                  {/* Write Transaction - Error State */}
+                  {isWriteError && !isWriteSuccess && (
+                    <>
+                      <Card
+                        radius="full"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-xl before:bg-slate-300 before:bg-red-500/75"
+                      >
+                        <span className="font-bold text-primary-fg">
+                          <i className="ri-close-fill text-xl" />
+                        </span>
+                      </Card>
+                      <p className="text-lg font-medium text-slate-400 text-red-600/75">
+                        Wallet rejected the request
+                      </p>
+                    </>
+                  )}
+
+                  {/* Write Transaction - Success State */}
+                  {isWriteSuccess && (
+                    <>
+                      <Card
+                        radius="full"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-xl before:bg-slate-300 before:bg-green-500/75"
+                      >
+                        <span className="font-bold text-primary-fg">
+                          <i className="ri-check-fill text-xl" />
+                        </span>
+                      </Card>
+                      <p className="text-lg font-medium text-slate-400 opacity-80 grayscale-[100%]">
+                        Wallet signature successful
+                      </p>
+                    </>
+                  )}
                 </li>
 
                 <li className="flex items-center justify-start gap-2">
-                  <Card
-                    radius="full"
-                    className={twMerge(
-                      "flex h-10 w-10 items-center justify-center rounded-full text-xl before:bg-slate-300",
-                      isConfirming && "before:bg-primary/75",
-                      isConfirmError && "before:bg-red-500/75",
-                      isConfirmSuccess && "before:bg-green-500/75",
-                    )}
-                  >
-                    <span className="font-bold text-primary-fg">
-                      {isConfirming && <Spinner />}
-                      {isConfirmError && (
-                        <i className="ri-close-fill text-xl" />
-                      )}
-                      {isConfirmSuccess && (
-                        <i className="ri-check-fill text-xl" />
-                      )}
-                    </span>
-                  </Card>
-                  <p
-                    className={twMerge(
-                      "text-lg font-medium text-slate-400",
-                      isConfirming && "text-fg/90",
-                      isConfirmError && "text-red-600/75",
-                      isConfirmSuccess && "opacity-80 grayscale-[100%]",
-                    )}
-                  >
-                    {isConfirmError && "Transaction failed"}
-                    {isConfirmSuccess && "Transaction succeeded"}
-                    {isWriteSuccess &&
-                      !isConfirmSuccess &&
-                      "Wait for network confirmation"}
-                  </p>
+                  {/* Confirmation - Pending State */}
+                  {!isConfirmError && !isConfirmSuccess && (
+                    <>
+                      <Card
+                        radius="full"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-xl before:bg-slate-300 before:bg-primary/75"
+                      >
+                        <span className="font-bold text-primary-fg">
+                          <Spinner />
+                        </span>
+                      </Card>
+                      <p className="text-lg font-medium text-slate-400 text-fg/90">
+                        Wait for network confirmation
+                      </p>
+                    </>
+                  )}
+
+                  {/* Confirmation - Error State */}
+                  {isConfirmError && !isConfirmSuccess && (
+                    <>
+                      <Card
+                        radius="full"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-xl before:bg-slate-300 before:bg-red-500/75"
+                      >
+                        <span className="font-bold text-primary-fg">
+                          <i className="ri-close-fill text-xl" />
+                        </span>
+                      </Card>
+                      <p className="text-lg font-medium text-slate-400 text-red-600/75">
+                        Transaction failed
+                      </p>
+                    </>
+                  )}
+
+                  {/* Confirmation - Success State */}
+                  {isConfirmSuccess && (
+                    <>
+                      <Card
+                        radius="full"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-xl before:bg-slate-300 before:bg-green-500/75"
+                      >
+                        <span className="font-bold text-primary-fg">
+                          <i className="ri-check-fill text-xl" />
+                        </span>
+                      </Card>
+                      <p className="text-lg font-medium text-slate-400 opacity-80 grayscale-[100%]">
+                        Transaction succeeded
+                      </p>
+                    </>
+                  )}
                 </li>
               </ul>
 
