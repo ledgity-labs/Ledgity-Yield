@@ -35,6 +35,7 @@ export const AppStakingPane: FC<{
   const [depositedAmount, setDepositedAmount] = useState(0n);
   const [stakeOptionIndex, setStakeOptionIndex] = useState(0);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const safeLdyTokenBalance = ldyTokenBalance || 0n;
 
   // Reset everything on ldyBalance change.
   useEffect(() => {
@@ -44,7 +45,7 @@ export const AppStakingPane: FC<{
     if (inputEl && inputEl.current) {
       inputEl.current.value = "0";
     }
-  }, [ldyTokenBalance]);
+  }, [safeLdyTokenBalance]);
 
   // Calculate APR based on stakeIndex and stakingAprInfo.
   const APR = useMemo(() => {
@@ -57,6 +58,10 @@ export const AppStakingPane: FC<{
     args: [depositedAmount, stakeOptionIndex],
   });
 
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   return (
     <div className="flex flex-col w-full p-4 gap-y-2 h-full">
       <div className="font-heading font-bold text-xl">
@@ -64,7 +69,7 @@ export const AppStakingPane: FC<{
       </div>
       <AmountInputWithLogo
         ref={inputEl}
-        maxValue={ldyTokenBalance}
+        maxValue={safeLdyTokenBalance}
         decimals={ldyTokenDecimals}
         symbol={ldyTokenSymbol}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -79,10 +84,10 @@ export const AppStakingPane: FC<{
           variant="outline"
           className="hover:bg-primary-fg"
           onClick={() => {
-            setDepositedAmount((ldyTokenBalance! * 25n) / 100n);
+            setDepositedAmount((safeLdyTokenBalance! * 25n) / 100n);
             if (inputEl.current)
               inputEl.current.value = formatUnits(
-                (ldyTokenBalance! * 25n) / 100n,
+                (safeLdyTokenBalance! * 25n) / 100n,
                 ldyTokenDecimals!,
               );
           }}
@@ -94,10 +99,10 @@ export const AppStakingPane: FC<{
           variant="outline"
           className="hover:bg-primary-fg"
           onClick={() => {
-            setDepositedAmount((ldyTokenBalance! * 50n) / 100n);
+            setDepositedAmount((safeLdyTokenBalance! * 50n) / 100n);
             if (inputEl.current)
               inputEl.current.value = formatUnits(
-                (ldyTokenBalance! * 50n) / 100n,
+                (safeLdyTokenBalance! * 50n) / 100n,
                 ldyTokenDecimals!,
               );
           }}
@@ -109,10 +114,10 @@ export const AppStakingPane: FC<{
           variant="outline"
           className="hover:bg-primary-fg"
           onClick={() => {
-            setDepositedAmount((ldyTokenBalance! * 75n) / 100n);
+            setDepositedAmount((safeLdyTokenBalance! * 75n) / 100n);
             if (inputEl.current)
               inputEl.current.value = formatUnits(
-                (ldyTokenBalance! * 75n) / 100n,
+                (safeLdyTokenBalance! * 75n) / 100n,
                 ldyTokenDecimals!,
               );
           }}
@@ -124,10 +129,10 @@ export const AppStakingPane: FC<{
           variant="outline"
           className="hover:bg-primary-fg"
           onClick={() => {
-            setDepositedAmount(ldyTokenBalance!);
+            setDepositedAmount(safeLdyTokenBalance!);
             if (inputEl.current)
               inputEl.current.value = formatUnits(
-                ldyTokenBalance!,
+                safeLdyTokenBalance!,
                 ldyTokenDecimals!,
               );
           }}
@@ -187,9 +192,7 @@ export const AppStakingPane: FC<{
         <div className="flex flex-col items-center">
           <AllowanceTxButton
             size="medium"
-            preparation={
-              preparation as unknown as UseSimulateContractReturnType
-            }
+            preparation={memoizedPreparation}
             token={ldyTokenAddress!}
             spender={ldyStakingAddress!}
             amount={depositedAmount}

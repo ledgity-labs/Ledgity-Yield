@@ -1,5 +1,5 @@
 "use client";
-import { type FC, useEffect, type ReactNode, useState } from "react";
+import { type FC, useEffect, type ReactNode, useState, useMemo } from "react";
 import {
   useSimulateContract,
   useReadContract,
@@ -77,6 +77,14 @@ export const AllowanceTxButton: FC<Props> = ({
     args: [spender, amount],
   });
 
+  const memoizedAllowancePreparation = useMemo(() => {
+    return allowancePreparation as unknown as UseSimulateContractReturnType;
+  }, [
+    allowancePreparation.data?.request,
+    allowancePreparation.error,
+    allowancePreparation.isLoading,
+  ]);
+
   // Update error state
   useEffect(() => {
     if (!isConnected) {
@@ -119,9 +127,7 @@ export const AllowanceTxButton: FC<Props> = ({
           className,
         )}
         hideTooltips={hasEnoughAllowance}
-        preparation={
-          allowancePreparation as unknown as UseSimulateContractReturnType
-        }
+        preparation={memoizedAllowancePreparation}
         disabled={(amount === 0n && !allowZeroAmount) || disabled}
         hasUserInteracted={hasUserInteracted}
         parentIsError={parentIsError || error.isError}
