@@ -12,6 +12,7 @@ import {
   Spinner,
 } from "@/components/ui";
 import {
+  useReadLTokenWithdrawalFeeInEth,
   useReadLTokenBalanceOf,
   useReadLTokenDecimals,
   useSimulateLTokenInstantWithdrawal,
@@ -48,6 +49,10 @@ export const WithdrawDialog: FC<Props> = ({
   });
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
+  const { data: withdrawalFeeInEth } = useReadLTokenWithdrawalFeeInEth({
+    address: lTokenAddress,
+  });
+
   const inputEl = useRef<HTMLInputElement>(null);
   const [withdrawnAmount, setWithdrawnAmount] = useState(0n);
   const instantWithdrawalPreparation = useSimulateLTokenInstantWithdrawal({
@@ -57,7 +62,7 @@ export const WithdrawDialog: FC<Props> = ({
   const requestWithdrawalPreparation = useSimulateLTokenRequestWithdrawal({
     address: lTokenAddress!,
     args: [withdrawnAmount],
-    value: parseEther("0.003"),
+    value: withdrawalFeeInEth,
   });
 
   // Refresh some data every 5 blocks

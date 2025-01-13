@@ -3,9 +3,11 @@ import { FC, useMemo } from "react";
 import { Amount, TxButton } from "@/components/ui";
 import {
   useReadPreMiningAccountsLocks,
+  useReadLTokenWithdrawalFeeInEth,
   useSimulatePreMiningInstantUnlock,
   useSimulatePreMiningRequestUnlock,
 } from "@/generated";
+import { useContractAddress } from "@/hooks/useContractAddress";
 import { UseSimulateContractReturnType, useAccount } from "wagmi";
 import { formatUnits, parseUnits, zeroAddress } from "viem";
 import { twMerge } from "tailwind-merge";
@@ -21,6 +23,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const AppPreMiningParticipate: FC<Props> = ({ className, ...props }) => {
   const account = useAccount();
+  const lTokenAddress = useContractAddress(`LUSDC`);
 
   // Retrieve lock data
   const { data: lockData } = useReadPreMiningAccountsLocks({
@@ -36,9 +39,16 @@ export const AppPreMiningParticipate: FC<Props> = ({ className, ...props }) => {
     (Date.now() - lockStart.getTime()) /
     (lockEnd.getTime() - lockStart.getTime());
 
+  const { data: withdrawalFeeInEth } = useReadLTokenWithdrawalFeeInEth({
+    address: lTokenAddress,
+  });
+
   // Prepare unlock
   const instantPreparation = useSimulatePreMiningInstantUnlock();
-  const requestPreparation = useSimulatePreMiningRequestUnlock();
+  const requestPreparation = useSimulatePreMiningRequestUnlock({
+    args: [],
+    value: withdrawalFeeInEth,
+  });
 
   // Compute account's eligible LDY amount
   const maxWeight = parseUnits((4_000_000 * 12).toString(), 6);
