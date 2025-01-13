@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { wagmiConfig } from "../lib/dapp/wagmi";
 import RainbowKitProvider from "./RainbowKitProvider";
 import { MainContextProvider } from "@/contexts";
+import "../lib/bigIntString";
 
 const queryClient = new QueryClient();
 
