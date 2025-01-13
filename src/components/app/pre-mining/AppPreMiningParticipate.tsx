@@ -1,5 +1,5 @@
 "use client";
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Amount, TxButton } from "@/components/ui";
 import {
   useReadPreMiningAccountsLocks,
@@ -60,17 +60,36 @@ export const AppPreMiningParticipate: FC<Props> = ({ className, ...props }) => {
     Number(formatUnits(lockAmount, 6)) *
     ({ 3: 1, 6: 5, 12: 25 }[lockDuration] || 0);
 
-  const memoizedPreparation = useMemo(() => {
-    return (instantPreparation.isError
-      ? requestPreparation
-      : instantPreparation) as unknown as UseSimulateContractReturnType;
+  const memoizedInstantPreparation = useMemo(() => {
+    return instantPreparation as unknown as UseSimulateContractReturnType;
   }, [
-    instantPreparation.isError,
     instantPreparation.data?.request,
     instantPreparation.error,
     instantPreparation.isLoading,
+  ]);
+
+  const memoizedRequestPreparation = useMemo(() => {
+    return requestPreparation as unknown as UseSimulateContractReturnType;
+  }, [
     requestPreparation.data?.request,
     requestPreparation.error,
+    requestPreparation.isLoading,
+  ]);
+
+  const [memoizedPreparation, setMemoizedPreparation] =
+    useState<UseSimulateContractReturnType>();
+
+  useEffect(() => {
+    if (instantPreparation.isLoading || requestPreparation.isLoading) return;
+
+    if (instantPreparation.isError) {
+      setMemoizedPreparation(memoizedRequestPreparation);
+    } else {
+      setMemoizedPreparation(memoizedInstantPreparation);
+    }
+  }, [
+    instantPreparation.isError,
+    instantPreparation.isLoading,
     requestPreparation.isLoading,
   ]);
 
@@ -130,7 +149,7 @@ export const AppPreMiningParticipate: FC<Props> = ({ className, ...props }) => {
                 <TxButton
                   size="medium"
                   preparation={memoizedPreparation}
-                  disabled={!hasLocked || lockUnlocked}
+                  disabled={!hasLocked || lockUnlocked || !memoizedPreparation}
                   className=""
                   transactionSummary={
                     <span>

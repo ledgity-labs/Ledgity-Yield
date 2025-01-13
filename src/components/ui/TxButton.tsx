@@ -27,7 +27,7 @@ import clsx from "clsx";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface Props extends React.ComponentPropsWithoutRef<typeof Button> {
-  preparation: UseSimulateContractReturnType;
+  preparation: UseSimulateContractReturnType | undefined;
   transactionSummary?: string | ReactNode;
   hasUserInteracted?: boolean;
   hideTooltips?: boolean;
@@ -73,7 +73,7 @@ export const TxButton: FC<Props> = ({
 
   useEffect(() => {
     if (accountAddress) {
-      preparation.refetch();
+      preparation?.refetch();
     }
   }, [accountAddress]);
 
@@ -98,16 +98,16 @@ export const TxButton: FC<Props> = ({
   } else if (parentIsError && parentError) {
     tooltipIsError = true;
     tooltipMessage = parentError;
-  } else if (preparation.isError) {
+  } else if (preparation?.isError) {
     tooltipIsError = true;
-    tooltipMessage = prettyErrorMessage(preparation.error as BaseError);
+    tooltipMessage = prettyErrorMessage(preparation?.error as BaseError);
   }
 
   const handleClick = async () => {
-    if (preparation.data?.request) {
+    if (preparation?.data?.request) {
       setIsDialogOpen(true);
       try {
-        writeContract(preparation.data.request);
+        writeContract(preparation?.data.request);
       } catch (error) {
         console.error("Transaction error:", error);
       }
