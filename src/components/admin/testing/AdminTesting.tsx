@@ -7,7 +7,7 @@ import {
   Input,
 } from "@/components/ui";
 import { useContractAddress } from "@/hooks/useContractAddress";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
 import { TxButton } from "@/components/ui/TxButton";
 import {
@@ -72,6 +72,10 @@ const MintFakeToken: FC<{ contractName: string }> = ({
       queryKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
   }, [blockNumber, ...queryKeys]);
 
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   return (
     <div {...props} className="mt-8">
       <h4 className="text-lg font-semibold">{tokenName}</h4>
@@ -114,12 +118,7 @@ const MintFakeToken: FC<{ contractName: string }> = ({
                 setMintedAmount(parseUnits(e.target.value, tokenDecimals!))
               }
             />
-            <TxButton
-              size="medium"
-              preparation={
-                preparation as unknown as UseSimulateContractReturnType
-              }
-            >
+            <TxButton size="medium" preparation={memoizedPreparation}>
               Mint
             </TxButton>
           </div>

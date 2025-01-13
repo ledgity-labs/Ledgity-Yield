@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, FC, useRef, useState, useEffect } from "react";
+import { ChangeEvent, FC, useRef, useState, useEffect, useMemo } from "react";
 import {
   AmountInput,
   Dialog,
@@ -71,6 +71,10 @@ export const DepositDialog: FC<Props> = ({
 
   // Fetch restriction status
   const { isRestricted, isLoading: isRestrictionLoading } = useRestricted();
+
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
 
   if (!lTokenAddress) return null;
   return (
@@ -149,9 +153,7 @@ export const DepositDialog: FC<Props> = ({
                     />
                     <AllowanceTxButton
                       size="medium"
-                      preparation={
-                        preparation as unknown as UseSimulateContractReturnType
-                      }
+                      preparation={memoizedPreparation}
                       token={underlyingAddress!}
                       spender={lTokenAddress}
                       amount={depositedAmount}

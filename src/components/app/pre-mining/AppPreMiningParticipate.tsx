@@ -1,5 +1,5 @@
 "use client";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { Amount, TxButton } from "@/components/ui";
 import {
   useReadPreMiningAccountsLocks,
@@ -49,6 +49,20 @@ export const AppPreMiningParticipate: FC<Props> = ({ className, ...props }) => {
   const eligibleEntries =
     Number(formatUnits(lockAmount, 6)) *
     ({ 3: 1, 6: 5, 12: 25 }[lockDuration] || 0);
+
+  const memoizedPreparation = useMemo(() => {
+    return (instantPreparation.isError
+      ? requestPreparation
+      : instantPreparation) as unknown as UseSimulateContractReturnType;
+  }, [
+    instantPreparation.isError,
+    instantPreparation.data?.request,
+    instantPreparation.error,
+    instantPreparation.isLoading,
+    requestPreparation.data?.request,
+    requestPreparation.error,
+    requestPreparation.isLoading,
+  ]);
 
   return (
     <div className={twMerge("flex flex-col", className)} {...props}>
@@ -105,11 +119,7 @@ export const AppPreMiningParticipate: FC<Props> = ({ className, ...props }) => {
                 <Progress value={lockProgression * 100} />
                 <TxButton
                   size="medium"
-                  preparation={
-                    (instantPreparation.isError
-                      ? requestPreparation
-                      : instantPreparation) as UseSimulateContractReturnType
-                  }
+                  preparation={memoizedPreparation}
                   disabled={!hasLocked || lockUnlocked}
                   className=""
                   transactionSummary={

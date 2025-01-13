@@ -2,7 +2,7 @@ import { Card, Rate, TxButton } from "@/components/ui";
 import { RateInput } from "@/components/ui/RateInput";
 import { useReadLTokenGetApr, useSimulateLTokenSetApr } from "@/generated";
 import { useContractAddress } from "@/hooks/useContractAddress";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import { parseUnits } from "viem";
 import { AdminBrick } from "../AdminBrick";
 import { UseSimulateContractReturnType, useBlockNumber } from "wagmi";
@@ -33,6 +33,10 @@ export const AdminLTokenAPR: FC<Props> = ({ className, lTokenSymbol }) => {
       queryKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
   }, [blockNumber, ...queryKeys]);
 
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   return (
     <AdminBrick title="APR">
       <p>
@@ -47,7 +51,7 @@ export const AdminLTokenAPR: FC<Props> = ({ className, lTokenSymbol }) => {
           }}
         />
         <TxButton
-          preparation={preparation as unknown as UseSimulateContractReturnType}
+          preparation={memoizedPreparation}
           hasUserInteracted={hasUserInteracted}
           size="medium"
         >

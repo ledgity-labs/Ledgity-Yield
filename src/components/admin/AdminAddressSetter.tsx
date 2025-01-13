@@ -1,6 +1,6 @@
 import { Address, Input, TxButton } from "@/components/ui";
 import { useContractAddress } from "@/hooks/useContractAddress";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import {
   UseSimulateContractReturnType,
   useBlockNumber,
@@ -52,6 +52,10 @@ export const AdminAddressSetter: FC<Props> = ({
       queryKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
   }, [blockNumber, ...queryKeys]);
 
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   return (
     <div className="flex flex-col gap-5">
       {displayName && <h4 className="text-lg font-semibold">{displayName}</h4>}
@@ -70,7 +74,7 @@ export const AdminAddressSetter: FC<Props> = ({
         />
         <TxButton
           size="medium"
-          preparation={preparation as unknown as UseSimulateContractReturnType}
+          preparation={memoizedPreparation}
           disabled={newAddress === zeroAddress}
           hasUserInteracted={hasUserInteracted}
         >

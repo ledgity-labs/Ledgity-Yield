@@ -8,7 +8,7 @@ import {
   TxButton,
 } from "@/components/ui";
 import { useContractAddress } from "@/hooks/useContractAddress";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
 import {
   SortingState,
@@ -53,11 +53,14 @@ const ProcessBigRequestButton: FC<ProcessBigRequestButtonProps> = ({
   lTokenAddress,
   requestId,
 }) => {
-  console.log("rendered");
   // const preparation = useSimulateLTokenProcessBigQueuedRequest({
   //   address: lTokenAddress,
   //   args: [requestId],
   // });
+  // const memoizedPreparation = useMemo(() => {
+  //   return preparation as unknown as UseSimulateContractReturnType;
+  // }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   const account = useAccount();
   const { data: underlyingAddress } = useReadLTokenUnderlying({
     address: lTokenAddress,
@@ -111,7 +114,7 @@ const ProcessBigRequestButton: FC<ProcessBigRequestButtonProps> = ({
     //   spender={lTokenAddress!}
     //   amount={requestData ? requestData[1] : 0n}
     //   size="tiny"
-    //   preparation={preparation as UseSimulateContractReturnType}
+    //   preparation={memoizedPreparation}
     //   transactionSummary={`Process big request with ID = ${Number(requestId)}`}
     // >
     //   Process
@@ -195,7 +198,7 @@ export const AdminLTokenWithdrawalRequests: FC<Props> = ({ lTokenSymbol }) => {
             // Skip already processed requests
             if (Number(account) == 0) continue;
             // Else, add request data to the new data array
-            console.log(typeof expectedRetained);
+           
             newRequestsData.push({
               id: i,
               account: account,
@@ -311,6 +314,22 @@ export const AdminLTokenWithdrawalRequests: FC<Props> = ({ lTokenSymbol }) => {
     setRepatriationAmount(_repatriationAmount);
   }, [requestsData]);
 
+  const memoizedRepatriationPreparation = useMemo(() => {
+    return repatriationPreparation as unknown as UseSimulateContractReturnType;
+  }, [
+    repatriationPreparation.data?.request,
+    repatriationPreparation.error,
+    repatriationPreparation.isLoading,
+  ]);
+
+  const memoizedProcessNonBigPreparation = useMemo(() => {
+    return processNonBigPreparation as unknown as UseSimulateContractReturnType;
+  }, [
+    processNonBigPreparation.data?.request,
+    processNonBigPreparation.error,
+    processNonBigPreparation.isLoading,
+  ]);
+
   return (
     <AdminBrick
       title="Withdrawal requests"
@@ -334,9 +353,7 @@ export const AdminLTokenWithdrawalRequests: FC<Props> = ({ lTokenSymbol }) => {
                     </p>
                     <TxButton
                       size="tiny"
-                      preparation={
-                        processNonBigPreparation as UseSimulateContractReturnType
-                      }
+                      preparation={memoizedProcessNonBigPreparation}
                       transactionSummary="Process as much as possible non-big requests"
                     >
                       Process
@@ -367,9 +384,7 @@ export const AdminLTokenWithdrawalRequests: FC<Props> = ({ lTokenSymbol }) => {
                       amount={repatriationAmount}
                       token={underlyingAddress!}
                       spender={lTokenAddress!}
-                      preparation={
-                        repatriationPreparation as unknown as UseSimulateContractReturnType
-                      }
+                      preparation={memoizedRepatriationPreparation}
                       transactionSummary={
                         <>
                           Repatriate{" "}

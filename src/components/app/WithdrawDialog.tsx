@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FC, useEffect, useRef, useState, useMemo } from "react";
 import {
   Amount,
   AmountInput,
@@ -71,6 +71,22 @@ export const WithdrawDialog: FC<Props> = ({
 
   // Fetch restriction status
   const { isRestricted, isLoading: isRestrictionLoading } = useRestricted();
+
+  const memoizedRequestWithdrawalPreparation = useMemo(() => {
+    return requestWithdrawalPreparation as unknown as UseSimulateContractReturnType;
+  }, [
+    requestWithdrawalPreparation.data?.request,
+    requestWithdrawalPreparation.error,
+    requestWithdrawalPreparation.isLoading,
+  ]);
+
+  const memoizedInstantWithdrawalPreparation = useMemo(() => {
+    return instantWithdrawalPreparation as unknown as UseSimulateContractReturnType;
+  }, [
+    instantWithdrawalPreparation.data?.request,
+    instantWithdrawalPreparation.error,
+    instantWithdrawalPreparation.isLoading,
+  ]);
 
   if (!lTokenAddress) return null;
   return (
@@ -162,9 +178,7 @@ export const WithdrawDialog: FC<Props> = ({
                     {(!instantWithdrawalPreparation.isError && (
                       <TxButton
                         size="medium"
-                        preparation={
-                          instantWithdrawalPreparation as unknown as UseSimulateContractReturnType
-                        }
+                        preparation={memoizedInstantWithdrawalPreparation}
                         className="relative -top-[1.5px]"
                         disabled={withdrawnAmount === 0n}
                         hasUserInteracted={hasUserInteracted}
@@ -194,9 +208,7 @@ export const WithdrawDialog: FC<Props> = ({
                     )) || (
                       <TxButton
                         size="medium"
-                        preparation={
-                          requestWithdrawalPreparation as unknown as UseSimulateContractReturnType
-                        }
+                        preparation={memoizedRequestWithdrawalPreparation}
                         className="relative -top-[1.5px]"
                         disabled={withdrawnAmount === 0n}
                         hasUserInteracted={hasUserInteracted}

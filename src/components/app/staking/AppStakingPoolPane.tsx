@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 
 import { CarouselItem } from "@/components/ui/Carousel";
 import { TxButton } from "@/components/ui";
@@ -16,6 +16,8 @@ import { getAPRCalculation } from "@/lib/getAPRCalculation";
 import { QueryKey } from "@tanstack/react-query";
 import { IUserStakingInfo } from "@/services/graph/hooks/useStakingEvent";
 import { getTimeLeftString } from "@/lib/utils";
+import { UseSimulateContractReturnType } from "wagmi";
+
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -52,6 +54,30 @@ export const AppStakingPoolPane: FC<{
   rewardsArrayQuery,
   ...props
 }) => {
+  const unstakePreparation = useSimulateLdyStakingUnstake({
+    args: [poolInfo.stakedAmount, BigInt(poolIndex)],
+  });
+
+  const getRewardsPreparation = useSimulateLdyStakingGetReward({
+    args: [BigInt(poolIndex)],
+  });
+
+  const memoizedUnstakePreparation = useMemo(() => {
+    return unstakePreparation as unknown as UseSimulateContractReturnType;
+  }, [
+    unstakePreparation.data?.request,
+    unstakePreparation.error,
+    unstakePreparation.isLoading,
+  ]);
+
+  const memoizedGetRewardsPreparation = useMemo(() => {
+    return getRewardsPreparation as unknown as UseSimulateContractReturnType;
+  }, [
+    getRewardsPreparation.data?.request,
+    getRewardsPreparation.error,
+    getRewardsPreparation.isLoading,
+  ]);
+
   return (
     <CarouselItem key={poolIndex} className="px-2 md:basis-1/2 lg:basis-1/3">
       <div className="p-3 lg:p-4 rounded-lg bg-card-content-default">
@@ -112,9 +138,7 @@ export const AppStakingPoolPane: FC<{
           </div>
           <div className="flex py-1 w-full">
             <TxButton
-              preparation={useSimulateLdyStakingUnstake({
-                args: [poolInfo.stakedAmount, BigInt(poolIndex)],
-              })}
+              preparation={memoizedUnstakePreparation}
               variant="primary"
               size="tiny"
               disabled={dayjs().isBefore(Number(poolInfo.unStakeAt) * 1000)}
@@ -130,9 +154,7 @@ export const AppStakingPoolPane: FC<{
           </div>
           <div className="flex py-1 w-full">
             <TxButton
-              preparation={useSimulateLdyStakingGetReward({
-                args: [BigInt(poolIndex)],
-              })}
+              preparation={memoizedGetRewardsPreparation}
               variant="outline"
               size="tiny"
               disabled={

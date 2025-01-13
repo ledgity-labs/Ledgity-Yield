@@ -4,7 +4,7 @@ import {
   useReadLTokenWithdrawalQueue,
   useSimulateLTokenProcessBigQueuedRequest,
 } from "@/generated";
-import { ChangeEvent, FC, useState } from "react";
+import { ChangeEvent, FC, useState, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { UseSimulateContractReturnType } from "wagmi";
@@ -30,6 +30,10 @@ export const AdminLTokenProcessBigQueued: FC<Props> = ({ lTokenSymbol }) => {
   const requestAmount = requestData ? requestData[1] : 0n;
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   return (
     <AdminBrick title="Process big queued request">
       <p>
@@ -49,7 +53,7 @@ export const AdminLTokenProcessBigQueued: FC<Props> = ({ lTokenSymbol }) => {
           step={1}
         />
         <AllowanceTxButton
-          preparation={preparation as unknown as UseSimulateContractReturnType}
+          preparation={memoizedPreparation}
           hasUserInteracted={hasUserInteracted}
           token={underlyingAddress!}
           spender={lTokenAddress!}

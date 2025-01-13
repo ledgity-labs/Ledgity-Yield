@@ -11,7 +11,7 @@ import {
   useReadLTokenUnderlying,
   useSimulateLTokenRepatriate,
 } from "@/generated";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { erc20Abi, parseUnits, zeroAddress } from "viem";
@@ -64,6 +64,10 @@ export const AdminLTokenRepatriate: FC<Props> = ({ lTokenSymbol }) => {
       queryKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
   }, [blockNumber, ...queryKeys]);
 
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   return (
     <AdminBrick title="Repatriate funds">
       <p>
@@ -84,7 +88,7 @@ export const AdminLTokenRepatriate: FC<Props> = ({ lTokenSymbol }) => {
         />
         <AllowanceTxButton
           size="medium"
-          preparation={preparation as unknown as UseSimulateContractReturnType}
+          preparation={memoizedPreparation}
           token={underlyingAddress!}
           spender={lTokenAddress!}
           amount={repatriatedAmount}

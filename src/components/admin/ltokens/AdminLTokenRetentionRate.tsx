@@ -5,7 +5,7 @@ import {
   useSimulateLTokenSetRetentionRate,
 } from "@/generated";
 import { useContractAddress } from "@/hooks/useContractAddress";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import { parseUnits } from "viem";
 import { AdminBrick } from "../AdminBrick";
 import { UseSimulateContractReturnType, useBlockNumber } from "wagmi";
@@ -40,6 +40,10 @@ export const AdminLTokenRetentionRate: FC<Props> = ({
       queryKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
   }, [blockNumber, ...queryKeys]);
 
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   return (
     <AdminBrick title="Retention rate">
       <p>
@@ -58,7 +62,7 @@ export const AdminLTokenRetentionRate: FC<Props> = ({
           }}
         />
         <TxButton
-          preparation={preparation as unknown as UseSimulateContractReturnType}
+          preparation={memoizedPreparation}
           hasUserInteracted={hasUserInteracted}
           size="medium"
         >

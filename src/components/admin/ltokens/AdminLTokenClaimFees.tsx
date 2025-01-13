@@ -5,7 +5,7 @@ import {
   useSimulateLTokenClaimFees,
 } from "@/generated";
 import { useContractAddress } from "@/hooks/useContractAddress";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
 import { UseSimulateContractReturnType, useBlockNumber } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
@@ -31,6 +31,10 @@ export const AdminLTokenClaimFees: FC<Props> = ({ lTokenSymbol }) => {
       queryKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
   }, [blockNumber, ...queryKeys]);
 
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   return (
     <AdminBrick title="Unclaimed fees">
       <p>
@@ -44,7 +48,7 @@ export const AdminLTokenClaimFees: FC<Props> = ({ lTokenSymbol }) => {
       </p>
       <div className="flex justify-center items-end gap-3">
         <TxButton
-          preparation={preparation as UseSimulateContractReturnType}
+          preparation={memoizedPreparation}
           size="medium"
           disabled={unclaimedFees === 0n}
         >

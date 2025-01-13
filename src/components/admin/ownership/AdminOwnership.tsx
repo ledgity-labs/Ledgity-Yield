@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { AdminMasonry } from "../AdminMasonry";
 import { AdminBrick } from "../AdminBrick";
 import { AdminAddressSetter } from "../AdminAddressSetter";
@@ -27,6 +27,11 @@ export const AdminOwnership: FC = () => {
     if (blockNumber && blockNumber % 5n === 0n)
       queryKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
   }, [blockNumber, ...queryKeys]);
+
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   return (
     <AdminMasonry className="!columns-2 w-[900px]">
       <AdminBrick title="Transfer global ownership">
@@ -43,10 +48,7 @@ export const AdminOwnership: FC = () => {
             <p className="text-center">
               The connected wallet is the recipient of a pending transfer
             </p>
-            <TxButton
-              preparation={preparation as UseSimulateContractReturnType}
-              size="medium"
-            >
+            <TxButton preparation={memoizedPreparation} size="medium">
               Accept
             </TxButton>
           </>

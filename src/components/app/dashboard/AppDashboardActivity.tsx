@@ -19,7 +19,7 @@ import {
   Spinner,
   TxButton,
 } from "@/components/ui";
-import React, { FC, useEffect, useState, useCallback } from "react";
+import React, { FC, useEffect, useState, useCallback, useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import {
   SortingState,
@@ -77,6 +77,10 @@ const CancelButton: FC<{
       queryKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
   }, [blockNumber, ...queryKeys]);
 
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   return (
     <AlertDialog>
       <Tooltip>
@@ -123,9 +127,7 @@ const CancelButton: FC<{
             <TxButton
               variant="destructive"
               size="small"
-              preparation={
-                preparation as unknown as UseSimulateContractReturnType
-              }
+              preparation={memoizedPreparation}
             >
               Cancel this request
             </TxButton>

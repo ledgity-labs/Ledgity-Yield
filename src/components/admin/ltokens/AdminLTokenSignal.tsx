@@ -1,7 +1,7 @@
 import { Card, TxButton } from "@/components/ui";
 import { useSimulateLTokenSignalerSignalLToken } from "@/generated";
 import { useContractAddress } from "@/hooks/useContractAddress";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
 import { UseSimulateContractReturnType } from "wagmi";
 
@@ -15,13 +15,14 @@ export const AdminLTokenSignal: FC<Props> = ({ lTokenSymbol }) => {
     args: [lTokenAddress!],
   });
 
+  const memoizedPreparation = useMemo(() => {
+    return preparation as unknown as UseSimulateContractReturnType;
+  }, [preparation.data?.request, preparation.error, preparation.isLoading]);
+
   return (
     <AdminBrick title="Data indexing">
       <div className="flex justify-center items-center">
-        <TxButton
-          preparation={preparation as unknown as UseSimulateContractReturnType}
-          size="medium"
-        >
+        <TxButton preparation={memoizedPreparation} size="medium">
           Signal
         </TxButton>
       </div>
