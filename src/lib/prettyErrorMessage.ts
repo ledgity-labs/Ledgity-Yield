@@ -130,10 +130,10 @@ export const prettyErrorMessage = (error: BaseError | Error) => {
         error.details.includes("insufficient funds for gas ")
       )
         prettyError = "Insufficient funds for gas";
-      else prettyError = error.shortMessage.split("\n")[1];
+      else prettyError = error.shortMessage?.split("\n")[1];
       if (!prettyError)
         prettyError =
-          error.details.split("'")[error.details.split("'").length - 2];
+          error.details?.split("'")[error.details?.split("'").length - 2];
     }
   }
   // For other errors, use the error message
