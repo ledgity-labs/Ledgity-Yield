@@ -14,7 +14,7 @@ import "./contracts/hardhat/tasks/verify.cts";
 
 import { parseEther } from "ethers/lib/utils";
 import { type HardhatUserConfig } from "hardhat/config";
-import { HardhatNetworkUserConfig } from "hardhat/types";
+import { HardhatNetworkUserConfig, NetworkUserConfig } from "hardhat/types";
 import secrets from "./secrets.json";
 
 const {
@@ -186,7 +186,12 @@ function makeForkConfig(): HardhatNetworkUserConfig {
 
 // Generate networks config from networkConfigs
 const networks = Object.entries(networkConfigs).reduce(
-  (acc, [key, network]) => {
+  (
+    acc: {
+      [key: string]: NetworkUserConfig;
+    },
+    [key, network],
+  ) => {
     acc[key] = {
       chainId: network.chainId,
       url: network.rpcUrl,
@@ -207,10 +212,18 @@ const networks = Object.entries(networkConfigs).reduce(
 
 // Generate etherscan config from networkConfigs
 const etherscan = {
-  apiKey: Object.entries(networkConfigs).reduce((acc, [_, network]) => {
-    acc[network.name] = network.verifyApiKey;
-    return acc;
-  }, {}),
+  apiKey: Object.entries(networkConfigs).reduce(
+    (
+      acc: {
+        [key: string]: string;
+      },
+      [_, network],
+    ) => {
+      acc[network.name] = network.verifyApiKey;
+      return acc;
+    },
+    {},
+  ),
   customChains: Object.values(networkConfigs)
     .filter((network) => network.name !== "mainnet")
     .map((network) => ({

@@ -134,7 +134,7 @@
     "eslint-config-next": "^14.1.0",
     "hardhat": "^2.20.1",
     "hardhat-contract-sizer": "^2.10.0",
-    "hardhat-deploy": "^0.11.45",
+    "hardhat-deploy": "^0.14.0",
     "pino-pretty": "^10.3.1",
     "postcss": "^8.4.35",
     "prettier": "^3.1.1",

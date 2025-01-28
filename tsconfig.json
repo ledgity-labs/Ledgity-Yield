@@ -7,17 +7,28 @@
     "esModuleInterop": true, // Enables ESM-style imports
     "skipLibCheck": true, // Skip type checking of all declaration files (*.d.ts)
     "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file.
-    "lib": ["dom.iterable", "ESNext", "DOM"], // Specify a list of library files to be included in the compilation
+    "lib": [
+      "dom.iterable",
+      "ESNext",
+      "DOM"
+    ], // Specify a list of library files to be included in the compilation
     "allowJs": true,
     "noEmit": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "allowImportingTsExtensions": true,
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "~/*": ["./public/*"],
-      "graphclient": ["./.graphclient/"]
+      "@/*": [
+        "./src/*"
+      ],
+      "~/*": [
+        "./public/*"
+      ],
+      "graphclient": [
+        "./.graphclient/"
+      ]
     },
     "plugins": [
       {
@@ -37,9 +48,12 @@
     "src/**/*.tsx",
     ".next/types/**/*.ts",
     "~/src/env.mjs",
-    "hardhat.config.cjs",
+    "hardhat.config.cts",
     "scripts/**/*.mts",
-    ".graphclient/**/*.ts"
+    ".graphclient/**/*.ts",
+    "contracts/**/*.cts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
