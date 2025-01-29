@@ -1,36 +1,16 @@
-import deployments from "../../contracts/deployments.json";
-import dependencies from "../../contracts/dependencies.json";
+import { deployments } from "../data/deployments";
+import { dependencies } from "../data/dependencies";
 
 export const getContractAddress = (
   contractName: string,
   chainId: number | string,
 ): `0x${string}` | undefined => {
-  let contractAddress: `0x${string}` | undefined;
+  // Cast to string
+  const chainIdString = chainId.toString();
 
-  // Ensure chainId is a string
-  chainId = chainId.toString();
+  const addressFromDependencies = dependencies?.[contractName]?.[chainIdString];
+  const addressFromDeployments =
+    deployments?.[chainIdString]?.[0]?.contracts?.[contractName]?.address;
 
-  // Search address in dependencies
-  // @ts-ignore
-  if (dependencies[contractName] && dependencies[contractName][chainId]) {
-    // @ts-ignore
-    contractAddress = dependencies[contractName][chainId];
-  }
-
-  // If not found yet, search it in deployed contracts
-  if (!contractAddress) {
-    if (
-      // @ts-ignore
-      deployments[chainId] &&
-      // @ts-ignore
-      deployments[chainId][0].contracts[contractName]
-    ) {
-      // @bw these are bad
-      // @ts-ignore
-      contractAddress = deployments[chainId][0].contracts[contractName].address;
-    }
-  }
-
-  // Return address
-  return contractAddress;
+  return addressFromDependencies ?? addressFromDeployments;
 };

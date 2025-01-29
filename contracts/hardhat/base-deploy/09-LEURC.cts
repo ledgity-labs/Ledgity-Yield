@@ -28,6 +28,7 @@ module.exports = (async ({ getNamedAccounts, deployments, getChainId }) => {
     throw missingAddressError;
 
   // Check address of underlying token is available for the current chain in dependencies.json
+  // @bw these are bad
   // @ts-ignore
   if (!Object.keys(dependencies[UNDERLYING_TOKEN_SYMBOL]).includes(chainId))
     throw missingAddressError;

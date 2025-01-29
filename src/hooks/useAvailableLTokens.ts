@@ -1,5 +1,6 @@
-import deployements from "../../contracts/deployments.json";
-import dependencies from "../../contracts/dependencies.json";
+import { deployments } from "../data/deployments";
+import { dependencies } from "../data/dependencies";
+
 import { usePublicClient } from "wagmi";
 import { useCurrentChain } from "./useCurrentChain";
 
@@ -9,12 +10,11 @@ export const useAvailableLTokens = () => {
   if (!currentChain) return [];
 
   // Return empty results if no contracts have been deployed on the current chain
-  if (!Object.keys(deployements).includes(currentChain.id.toString()))
-    return [];
+  if (!Object.keys(deployments).includes(currentChain.id.toString())) return [];
 
   // Else, get contracts deployed on the current chain
   const contracts =
-    deployements[currentChain.id.toString() as keyof typeof deployements][0]
+    deployments[currentChain.id.toString() as keyof typeof deployments][0]
       .contracts;
 
   // Retrieve L-Tokens contracts (ones that are prefixed with "L" + the name of a dependency)
