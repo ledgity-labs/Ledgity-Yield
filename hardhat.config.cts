@@ -17,6 +17,13 @@ import { type HardhatUserConfig } from "hardhat/config";
 import { HardhatNetworkUserConfig, NetworkUserConfig } from "hardhat/types";
 import secrets from "./secrets.json";
 
+import dotenv from "dotenv";
+import colors from "colors";
+dotenv.config();
+colors.enable();
+
+const { HARDHAT_DEPLOY_FORK } = process.env;
+
 const {
   DEPLOYER_PK,
   MAINNET_RPC_URL,
@@ -25,7 +32,6 @@ const {
   BASE_RPC_URL,
   BASE_FORKING_BLOCK,
   BASE_VERIFY_API_KEY,
-  HARDHAT_FORK_TARGET,
   LINEASCAN_API_KEY,
   ARBISCAN_API_KEY,
   ETHERSCAN_API_KEY,
@@ -144,8 +150,8 @@ const networkConfigs: { [key: string]: NetworkConfig } = {
 };
 
 // Fork configuration
-const forkTarget = HARDHAT_FORK_TARGET?.toLowerCase();
-if (!HARDHAT_FORK_TARGET || !networkConfigs[forkTarget]) {
+const forkTarget = HARDHAT_DEPLOY_FORK?.toLowerCase();
+if (!forkTarget || !networkConfigs[forkTarget]) {
   throw Error("Missing or erroneous fork target");
 }
 
