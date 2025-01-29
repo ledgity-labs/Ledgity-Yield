@@ -24,7 +24,7 @@ import { JSONStringify } from "@/lib/jsonStringify";
 import { useSwitchAppTab } from "@/hooks/useSwitchAppTab";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
 
-const availableChains = [42161, 59144];
+const availableChains = [42161, 59144, 8453];
 
 interface Pool {
   tokenSymbol: string;
@@ -193,7 +193,7 @@ export const AppInvestTokens: FC<Props> = ({ className }) => {
 
   const headerGroup = table.getHeaderGroups()[0];
 
-  function populateReadsConfig() {
+  useEffect(() => {
     // This array will host the reads requests configs built below
     const newReadsConfig = [] as {
       address: `0x${string}`;
@@ -254,88 +254,78 @@ export const AppInvestTokens: FC<Props> = ({ className }) => {
       setIsLoading(true);
       setReadsConfig(newReadsConfig);
     }
-  }
 
-  useEffect(populateReadsConfig, [account.address, currentChain]);
+    // Clear configs on unmount/cleanup
+    return () => {
+      setReadsConfig([]);
+    };
+  }, [account.address, currentChain]);
 
-  useEffect(
-    () =>
-      watchBlockNumber(wagmiConfig, {
-        async onBlockNumber() {
-          if (!currentChain) return;
+  useEffect(() => {
+    const unwatchFn = watchBlockNumber(wagmiConfig, {
+      async onBlockNumber(blockNumber) {
+        if (!currentChain) return;
+        if (blockNumber % 5n !== 0n && tableData.length) return;
 
-          const data = await readContracts(wagmiConfig, {
-            contracts: readsConfig,
+        const data = await readContracts(wagmiConfig, {
+          contracts: readsConfig,
+        });
+
+        if (!data?.length || data.some((item) => item?.status !== "success")) {
+          return;
+        }
+
+        const nbDataPointsPerToken = 5 + availableChains.length - 1;
+
+        if (data.length % nbDataPointsPerToken !== 0) {
+          console.warn("Invalid data length: ", data.length);
+          return;
+        }
+
+        const nbTokenDatas = data.length / nbDataPointsPerToken;
+
+        const newTableData: Pool[] = [];
+        for (let i = 0; i < nbTokenDatas; i++) {
+          const symbol = data[i * 5]!.result as string;
+          const decimals = data[i * 5 + 1].result as number;
+          const totalSupply = data[i * 5 + 2].result as bigint;
+          const apr = data[i * 5 + 3].result as number;
+          const balance = data[i * 5 + 4].result as bigint;
+
+          const tvl = data
+            .slice(
+              i * nbDataPointsPerToken + 5,
+              i * nbDataPointsPerToken + 5 + availableChains.length - 1,
+            )
+            .reduce((acc, el, j) => {
+              // @bw missing reflection of price on token TVL
+              return acc + (el?.result as bigint);
+            }, totalSupply);
+
+          newTableData.push({
+            tokenSymbol: symbol.slice(1),
+            invested: [balance, decimals],
+            tvl: [tvl, decimals],
+            apr: apr,
           });
+        }
 
-          if (data.length > 0) {
-            const _tableData: Pool[] = [];
+        // Update table data only if it has changed
+        if (JSONStringify(tableData) != JSONStringify(newTableData)) {
+          setTableData(newTableData);
+        }
 
-            while (data.length !== 0) {
-              let lTokenSymbol: string;
-              let decimals: number;
-              let tvl: bigint;
-              let apr: number;
-              let investedAmount: bigint;
+        setIsLoading(false);
+      },
+    });
 
-              // Retrieve L-Token current chain data
-              try {
-                lTokenSymbol = data.shift()!.result! as string;
-                decimals = data.shift()!.result! as number;
-                tvl = data.shift()!.result! as bigint;
-                apr = data.shift()!.result! as number;
-                investedAmount = data.shift()!.result! as bigint;
-              } catch (e) {
-                if (e instanceof TypeError) continue;
-                else throw e;
-              }
-
-              // Continue if L-Token is not available on current chain
-              if (!lTokenSymbol) continue;
-
-              // Accumulate other chain TVLs too
-              for (const chainId of availableChains) {
-                // Skip if current chain
-                if (chainId === currentChain.id) continue;
-
-                // Retrieve L-Token address on other chain
-                const chainLTokenAddress = getContractAddress(
-                  lTokenSymbol,
-                  chainId,
-                );
-
-                // If L-Token is not available on the other chain, skip
-                if (!chainLTokenAddress) continue;
-
-                // Retrieve TVL on other chain
-                const chainTvl = data.shift()!.result! as bigint;
-
-                // Accumulate TVL
-                tvl += chainTvl;
-              }
-
-              // Build underlying symbol
-              const underlyingSymbol = lTokenSymbol.slice(1);
-              // Push data to table data
-              _tableData.push({
-                tokenSymbol: underlyingSymbol,
-                invested: [investedAmount, decimals],
-                tvl: [tvl, decimals],
-                apr: apr,
-              });
-            }
-
-            // Update table data only if it has changed
-            if (JSONStringify(tableData) != JSONStringify(_tableData)) {
-              if (!isActionsDialogOpen.current) setTableData(_tableData);
-              else futureTableData.current = _tableData;
-            }
-          }
-          setIsLoading(false);
-        },
-      }),
-    [readsConfig],
-  );
+    // Cleanup function
+    return () => {
+      unwatchFn();
+      setTableData([]);
+      setIsLoading(false);
+    };
+  }, [readsConfig]);
 
   return (
     <article
@@ -435,14 +425,14 @@ export const AppInvestTokens: FC<Props> = ({ className }) => {
             </p>
           );
         else
-          return tableRows.map((row, rowIndex) =>
+          return tableRows.map((row, i) =>
             row.getVisibleCells().map((cell, cellIndex) => (
               <div
                 key={cell.id}
                 className={twMerge(
-                  "inline-flex items-center justify-center py-6 border-b border-b-fg/20",
+                  "inline-flex items-center justify-center py-6",
                   cellIndex === 0 && "justify-start sm:pl-10 pl-5",
-                  // rowIndex == tableRows.length - 1 && "border-b-0",
+                  i == tableRows.length - 1 && "border-b border-b-fg/20",
                   cell.column.id === "invested" && "md:inline-flex hidden",
                 )}
               >
