@@ -73,7 +73,7 @@ task("verify-deploys", "Verifies all contracts from the latest deployment")
         }
 
         console.log(`✅ ${deployment.name} verified successfully`);
-      } catch (error) {
+      } catch (error: any) {
         if (error.message.includes("already verified")) {
           console.log(`Contract ${deployment.name} is already verified`);
         } else {
