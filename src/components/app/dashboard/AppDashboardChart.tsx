@@ -40,11 +40,11 @@ export const AppDashboardChart: React.PropsWithoutRef<typeof Card> = ({
 }) => {
   const [period, setPeriod] = useState("90");
   const [type, setType] = useState<"revenue" | "growth">("revenue");
-  const { data, isDataLoading, isDataError, dataErrorMessage } =
+  const { growthData, isDataLoading, isDataError, dataErrorMessage } =
     useGrowthRevenueData();
   const [labels, setLabels] = useState<Date[]>([]);
   const [revenueData, setRevenueData] = useState<number[]>([]);
-  const [growthData, setGrowthData] = useState<number[]>([]);
+  const [formattedGrowthData, setFormattedGrowthData] = useState<number[]>([]);
 
   let delayed: boolean;
 
@@ -55,7 +55,7 @@ export const AppDashboardChart: React.PropsWithoutRef<typeof Card> = ({
     if (period !== "all") numberOfDays = Number(period);
     else {
       const investmentStarts: number[] = [];
-      for (const lTokenData of Object.values(data)) {
+      for (const lTokenData of Object.values(growthData)) {
         if (lTokenData.length > 0) {
           investmentStarts.push(lTokenData[0].timestamp);
         }
@@ -108,7 +108,7 @@ export const AppDashboardChart: React.PropsWithoutRef<typeof Card> = ({
     let _revenueData: number[] = new Array(_labels.length).fill(0);
 
     // Reverse data and label array so the most recent data is first
-    const reversedData = JSON.parse(JSON.stringify(data));
+    const reversedData = JSON.parse(JSON.stringify(growthData));
     for (const key of Object.keys(reversedData)) {
       reversedData[key].reverse();
     }
@@ -272,13 +272,13 @@ export const AppDashboardChart: React.PropsWithoutRef<typeof Card> = ({
 
     // Set new data and labels
     setLabels(_labels);
-    setGrowthData(_growthData.reverse());
+    setFormattedGrowthData(_growthData.reverse());
     setRevenueData(_revenueData.reverse());
   };
 
   useEffect(() => {
     if (!isDataLoading) computeChartData();
-  }, [data, isDataLoading, period]);
+  }, [growthData, isDataLoading, period]);
 
   return (
     <article
@@ -411,7 +411,7 @@ export const AppDashboardChart: React.PropsWithoutRef<typeof Card> = ({
                         },
                         {
                           label: "Growth",
-                          data: growthData,
+                          data: formattedGrowthData,
                           hidden: type !== "growth",
                         },
                       ],

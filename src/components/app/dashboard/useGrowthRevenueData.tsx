@@ -1,98 +1,86 @@
-import { useAccount, usePublicClient } from "wagmi";
-import { getTokenUSDRate } from "@/lib/getTokenUSDRate";
-import { formatUnits, zeroAddress } from "viem";
 import { readLToken } from "@/generated";
 import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
-import { getContractAddress } from "@/lib/getContractAddress";
-import { useEffect, useState } from "react";
-import { Activity, LToken, RewardsMint, execute } from "graphclient";
-import { wagmiConfig } from "@/lib/dapp/wagmi";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
+import { wagmiConfig } from "@/lib/dapp/wagmi";
+import { getContractAddress } from "@/lib/getContractAddress";
+import { getTokenUSDRate } from "@/lib/getTokenUSDRate";
+import { Activity, LToken, RewardsMint, execute } from "graphclient";
+import { useCallback, useEffect, useState } from "react";
+import { formatUnits } from "viem";
+import { useAccount } from "wagmi";
 
-type Data = Record<
-  string,
-  {
+type TokenData = {
+  [ltokenNames: string]: {
     timestamp: number;
     revenue: number;
     balanceBefore: number;
     growth: number;
-  }[]
->;
+  }[];
+};
 
-interface CacheEntry {
-  timestamp: number;
-  data: Data;
-}
+type Data = {
+  [chainId: number]: {
+    timestamp: number;
+    data: TokenData;
+  };
+};
 
-const dataCacheDuration = 60 * 10; // 10 minutes
-let dataCache: Record<number, CacheEntry> = {};
+type SubgraphUserInvestmentActivity = {
+  data: {
+    [key: string]: LToken[] & {
+      activities: Activity[];
+    };
+  };
+};
 
-export const useGrowthRevenueData = () => {
+type SubgraphUserRewardsMints = {
+  data: {
+    [key: string]: [
+      RewardsMint & {
+        ltoken: LToken;
+      },
+    ];
+  };
+};
+
+const CACHE_MAX_AGE = 60 * 10; // seconds
+
+export function useGrowthRevenueData(): {
+  growthData: TokenData;
+  isDataLoading: boolean;
+  isDataError: boolean;
+  dataErrorMessage?: string;
+} {
   const lTokens = useAvailableLTokens();
-  const publicClient = usePublicClient();
   const currentChain = useCurrentChain();
   const account = useAccount();
   const [data, setData] = useState<Data>({});
-  const [isDataLoading, setIsDataLoading] = useState(true);
-  const [isDataError, setIsError] = useState(false);
+  const chainData = data[account?.chainId || 0]?.data || {};
+  const [isDataLoading, setIsDataLoading] = useState(false);
   const [dataErrorMessage, setDataErrorMessage] = useState<string>();
 
-  const computeData = async () => {
-    // If no wallet connected
-    if (!account || !account.chainId) {
-      setIsError(true);
-      setDataErrorMessage("No wallet connected");
+  const computeData = useCallback(async () => {
+    const previousData = data?.[account?.chainId || 0];
+
+    if (
+      isDataLoading ||
+      !account?.address ||
+      !account?.chainId ||
+      !currentChain ||
+      (previousData &&
+        Date.now() / 1000 - previousData.timestamp < CACHE_MAX_AGE)
+    ) {
+      setIsDataLoading(false);
       return;
     }
 
-    // If data cache doesn't exist or isn't valid anymore
-    const cacheEntry = dataCache[account.chainId];
-    if (
-      !cacheEntry ||
-      Date.now() / 1000 - cacheEntry.timestamp > dataCacheDuration
-    ) {
-      // Get new data
-      const newData = await _computeData();
-
-      // If there is no data
-      if (newData === null) {
-        setIsError(true);
-        setDataErrorMessage("No data yet");
-        return;
-      }
-
-      // Refresh cached data
-      dataCache[account.chainId] = {
-        data: newData,
-        timestamp: Date.now() / 1000,
-      };
-    }
-
-    // Else remove errors
-    setIsError(false);
+    setIsDataLoading(true);
     setDataErrorMessage(undefined);
 
-    // Update data
-    setData(dataCache[account.chainId].data);
-  };
-
-  const _computeData = async () => {
-    // Else compute new data
-    const newData: Data = {};
-
-    // Initialize empty data keys arrays
-    lTokens.forEach((lToken) => (newData[lToken] = []));
-
-    // Retrieve investments start timestamps for each L-Token
-    // @ts-ignore
-    const investmentStartRequest: {
-      data: {
-        [key: string]: LToken[] & {
-          activities: Activity[];
-        };
-      };
-    } = await execute(
-      `
+    try {
+      // Retrieve investments start timestamps for each L-Token
+      const investmentStartRequest = (await execute(
+        `
       {
         c${account.chainId}_ltokens {
           symbol
@@ -104,39 +92,40 @@ export const useGrowthRevenueData = () => {
         }
       }
       `,
-      {},
-    );
+        {},
+      ).catch((e) => {
+        throw Error("Failed to fetch investment start data");
+      })) as SubgraphUserInvestmentActivity;
 
-    // Return empty data if there is no investment start
-    if (!investmentStartRequest.data) return null;
-    const investmentStartData =
-      investmentStartRequest.data[`c${account.chainId}_ltokens`];
-    if (!investmentStartData) return null;
-
-    // Push investment start as first data point
-    for (const lToken of investmentStartData) {
-      if (lToken.activities && lToken.activities.length > 0) {
-        newData[lToken.symbol].push({
-          timestamp: Number(lToken.activities[0].timestamp),
-          revenue: 0,
-          balanceBefore: 0,
-          growth: 0,
-        });
+      const investmentStartData =
+        investmentStartRequest?.data?.[`c${account.chainId}_ltokens`];
+      if (!investmentStartData) {
       }
-    }
 
-    // Retrieve all rewards mints events data
-    // @ts-ignore
-    const mintsEventsRequest: {
-      data: {
-        [key: string]: [
-          RewardsMint & {
-            ltoken: LToken;
-          },
-        ];
-      };
-    } = await execute(
-      `
+      // Convert revenue to decimals and then to USD
+      const timestamp = Math.floor(Date.now() / 1000);
+      // If data cache doesn't exist or isn't valid anymore
+      // Else compute new data
+      const newData: TokenData = {};
+
+      // Push investment start as first data point
+      for (const lToken of investmentStartData) {
+        if (lToken.activities && lToken.activities.length > 0) {
+          newData[lToken.symbol] ??= [];
+
+          newData[lToken.symbol].push({
+            timestamp: Number(lToken.activities[0].timestamp),
+            revenue: 0,
+            balanceBefore: 0,
+            growth: 0,
+          });
+        }
+      }
+
+      // Retrieve all rewards mints events data
+
+      const mintsEventsRequest = (await execute(
+        `
       {
         c${account.chainId}_rewardsMints(where: { account: "${
           account.address
@@ -153,89 +142,127 @@ export const useGrowthRevenueData = () => {
         }
       }
       `,
-      {},
-    );
+        {},
+      )) as SubgraphUserRewardsMints;
 
-    // Push each reward mint as data point
-    const mintsEventsData =
-      mintsEventsRequest.data[`c${account.chainId}_rewardsMints`];
-    for (const rewardsMint of mintsEventsData) {
-      const usdRate = await getTokenUSDRate(rewardsMint.ltoken.symbol.slice(1));
+      // Push each reward mint as data point
+      const mintsEventsData =
+        mintsEventsRequest?.data?.[`c${account.chainId}_rewardsMints`];
 
-      // Convert revenue to decimals and then to USD
-      let revenue = Number(
-        formatUnits(BigInt(rewardsMint.revenue), rewardsMint.ltoken.decimals),
-      );
-      revenue = revenue * usdRate;
-
-      // Convert balance before to decimals and then to USD
-      let balanceBefore = Number(
-        formatUnits(
-          BigInt(rewardsMint.balanceBefore),
-          rewardsMint.ltoken.decimals,
-        ),
-      );
-      balanceBefore = balanceBefore * usdRate;
-
-      newData[rewardsMint.ltoken.symbol].push({
-        timestamp: Number(rewardsMint.timestamp),
-        revenue: revenue,
-        balanceBefore: balanceBefore,
-        growth: Number(rewardsMint.growth),
-      });
-    }
-
-    // Push not yet minted rewards as data point
-    if (currentChain) {
-      for (const lToken of lTokens) {
-        const lTokenAddress = getContractAddress(lToken, currentChain.id)!;
-        const decimals = await readLToken(wagmiConfig, {
-          address: lTokenAddress,
-          functionName: "decimals",
+      if (!mintsEventsData) {
+        setIsDataLoading(false);
+        // Update data
+        setData({
+          ...data,
+          [account.chainId]: {
+            timestamp,
+            data: newData,
+          },
         });
-        const _balanceBefore = await readLToken(wagmiConfig, {
-          address: lTokenAddress,
-          functionName: "realBalanceOf",
-          args: [account.address || zeroAddress],
-        });
-        const unclaimedRewards = await readLToken(wagmiConfig, {
-          address: lTokenAddress,
-          functionName: "unmintedRewardsOf",
-          args: [account.address || zeroAddress],
-        });
-        const usdRate = await getTokenUSDRate(lToken.slice(1));
+        return;
+      }
+
+      for (const rewardsMint of mintsEventsData) {
+        const usdRate = await getTokenUSDRate(
+          rewardsMint.ltoken.symbol.slice(1),
+        );
 
         // Convert revenue to decimals and then to USD
-        let revenue = Number(formatUnits(unclaimedRewards, decimals));
-        revenue = revenue * usdRate;
+        const revenue =
+          Number(
+            formatUnits(
+              BigInt(rewardsMint.revenue),
+              rewardsMint.ltoken.decimals,
+            ),
+          ) * usdRate;
 
         // Convert balance before to decimals and then to USD
-        let balanceBefore = Number(formatUnits(_balanceBefore, decimals));
+        let balanceBefore = Number(
+          formatUnits(
+            BigInt(rewardsMint.balanceBefore),
+            rewardsMint.ltoken.decimals,
+          ),
+        );
         balanceBefore = balanceBefore * usdRate;
 
-        newData[lToken].push({
-          timestamp: Math.floor(Date.now() / 1000),
+        newData[rewardsMint.ltoken.symbol].push({
+          timestamp: Number(rewardsMint.timestamp),
           revenue: revenue,
           balanceBefore: balanceBefore,
-          growth: balanceBefore ? revenue / balanceBefore : 0,
+          growth: Number(rewardsMint.growth),
         });
       }
+
+      // Push not yet minted rewards as data point
+      for (const lToken of lTokens) {
+        const underlyingSymbol = lToken.slice(1);
+        const lTokenAddress = getContractAddress(lToken, currentChain.id)!;
+
+        const [decimals, balanceBeforeBigInt, unclaimedRewards, usdRate] =
+          await Promise.all([
+            readLToken(wagmiConfig, {
+              address: lTokenAddress,
+              functionName: "decimals",
+            }),
+            readLToken(wagmiConfig, {
+              address: lTokenAddress,
+              functionName: "realBalanceOf",
+              args: [account.address],
+            }),
+            readLToken(wagmiConfig, {
+              address: lTokenAddress,
+              functionName: "unmintedRewardsOf",
+              args: [account.address],
+            }),
+            getTokenUSDRate(underlyingSymbol),
+          ]);
+
+        // Convert revenue to decimals and then to USD
+        const timestamp = Math.floor(Date.now() / 1000);
+        const revenue =
+          Number(formatUnits(unclaimedRewards, decimals)) * usdRate;
+
+        // Convert balance before to decimals and then to USD
+        const formattedBalanceBefore = Number(
+          formatUnits(balanceBeforeBigInt, decimals),
+        );
+        const balanceBefore = formattedBalanceBefore * usdRate;
+        const growth = balanceBefore ? revenue / balanceBefore : 0;
+
+        newData[lToken].push({
+          timestamp,
+          revenue,
+          balanceBefore,
+          growth,
+        });
+      }
+
+      // Update data
+      setData({
+        ...data,
+        [account.chainId]: {
+          timestamp,
+          data: newData,
+        },
+      });
+      setIsDataLoading(false);
+    } catch (e) {
+      console.error(e);
+      setIsDataLoading(false);
+      setDataErrorMessage("An error occurred");
     }
+  }, [account.address, currentChain]);
 
-    setDataErrorMessage(undefined);
-    setIsError(false);
-    return newData;
+  useEffect(() => {
+    computeData().catch((e) => {
+      console.error(e);
+    });
+  }, [computeData]);
+
+  return {
+    growthData: chainData,
+    isDataLoading,
+    isDataError: !!dataErrorMessage,
+    dataErrorMessage,
   };
-
-  useEffect(() => {
-    setIsDataLoading(true);
-    computeData().then(() => setIsDataLoading(false));
-  }, []);
-
-  useEffect(() => {
-    setIsDataLoading(true);
-    computeData().then(() => setIsDataLoading(false));
-  }, [account.address, publicClient]);
-
-  return { data, isDataLoading, isDataError, dataErrorMessage };
-};
+}
