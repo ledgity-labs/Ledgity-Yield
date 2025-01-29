@@ -14,7 +14,7 @@ import "./contracts/hardhat/tasks/verify.cts";
 
 import { parseEther } from "ethers/lib/utils";
 import { type HardhatUserConfig } from "hardhat/config";
-import { HardhatNetworkUserConfig, NetworkUserConfig } from "hardhat/types";
+import { HardhatNetworkUserConfig, HttpNetworkUserConfig } from "hardhat/types";
 import secrets from "./secrets.json";
 
 import dotenv from "dotenv";
@@ -155,11 +155,11 @@ if (!forkTarget || !networkConfigs[forkTarget]) {
   throw Error("Missing or erroneous fork target");
 }
 
-function makeForkConfig(): HardhatNetworkUserConfig {
-  const config = networkConfigs[forkTarget];
+function makeForkConfig(chainName: string): HardhatNetworkUserConfig {
+  const config = networkConfigs[chainName];
 
   console.log(
-    `=> Hardhat forking ${forkTarget.toUpperCase()}${config.forkingBlock ? ` at block ${config.forkingBlock}` : ""}\n`
+    `=> Hardhat forking ${chainName.toUpperCase()}${config.forkingBlock ? ` at block ${config.forkingBlock}` : ""}\n`
       .magenta,
   );
 
@@ -167,7 +167,7 @@ function makeForkConfig(): HardhatNetworkUserConfig {
     chainId: config.chainId,
     deploy: config.deploy,
     saveDeployments: true,
-    allowUnlimitedContractSize: true,
+    live: true,
     forking: {
       url: config.rpcUrl,
       blockNumber:
@@ -194,7 +194,7 @@ function makeForkConfig(): HardhatNetworkUserConfig {
 const networks = Object.entries(networkConfigs).reduce(
   (
     acc: {
-      [key: string]: NetworkUserConfig;
+      [key: string]: HttpNetworkUserConfig;
     },
     [key, network],
   ) => {
@@ -269,7 +269,7 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
-    hardhat: makeForkConfig(),
+    hardhat: makeForkConfig(forkTarget),
     ...networks,
   },
   etherscan,
