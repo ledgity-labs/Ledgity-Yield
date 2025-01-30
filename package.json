@@ -78,7 +78,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@rainbow-me/rainbowkit": "^2",
     "@t3-oss/env-nextjs": "^0",
-    "@tanstack/react-query": "^5.20.2",
+    "@tanstack/react-query": "^5.65.1",
     "@tanstack/react-table": "^8.11.2",
     "@wagmi/core": "^2",
     "@xswap-link/sdk": "^0.8.2",
@@ -105,11 +105,10 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "remixicon": "^4",
-    "sharp": "^0",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.1.0",
-    "viem": "^2",
-    "wagmi": "^2.5.7",
+    "viem": "^2.22.17",
+    "wagmi": "^2.14.9",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -151,9 +150,6 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
   },
-  "trustedDependencies": [
-    "sharp"
-  ],
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
