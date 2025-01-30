@@ -37,9 +37,12 @@ export const AppInvestTVL: FC<Props> = (props) => {
       for (const lTokenSymbol of lTokens) {
         const lTokenAddress = getContractAddress(lTokenSymbol, chainId);
 
-        // Ensure no address is missing
-        if (!lTokenAddress)
-          throw "Some contracts addresses are missing for the current chain. Cannot watch data.";
+        if (!lTokenAddress) {
+          console.warn(
+            `Address for ${lTokenSymbol} not found on chain ${chainId}`,
+          );
+          continue;
+        }
 
         // Populate required reads requests
         ["symbol", "totalSupply", "decimals"].forEach((functionName) => {
