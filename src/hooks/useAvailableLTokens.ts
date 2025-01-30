@@ -1,10 +1,8 @@
 import { deployments } from "../data/deployments";
 import { dependencies } from "../data/dependencies";
-
-import { usePublicClient } from "wagmi";
 import { useCurrentChain } from "./useCurrentChain";
 
-export const useAvailableLTokens = () => {
+export function useAvailableLTokens() {
   // Return empty results if the frontend is not connected to any chain
   const currentChain = useCurrentChain();
   if (!currentChain) return [];
@@ -28,4 +26,4 @@ export const useAvailableLTokens = () => {
   });
 
   return lTokensNames;
-};
+}
