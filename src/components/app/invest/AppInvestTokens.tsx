@@ -1,39 +1,38 @@
-import { Amount, Button, Card, Rate } from "@/components/ui";
-import React, { FC, useEffect, useRef, useState } from "react";
+import { Spinner } from "@/components/ui/Spinner";
+import { getContractAddress } from "@/lib/getContractAddress";
+import { twMerge } from "tailwind-merge";
+// Components
+import { Amount, Button, Rate } from "@/components/ui";
 import {
+  SortingState,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  useReactTable,
-  SortingState,
   getSortedRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
-import { twMerge } from "tailwind-merge";
 import { TokenLogo } from "../../ui/TokenLogo";
 import { DepositDialog } from "../DepositDialog";
 import { WithdrawDialog } from "../WithdrawDialog";
-import { lTokenAbi } from "@/generated";
+// Functions
+import { fetchTokenPriceUsd } from "../../../functions/fetchTokenPriceUsd";
+// Hooks
 import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
-import { getContractAddress } from "@/lib/getContractAddress";
-import { Spinner } from "@/components/ui/Spinner";
-import { zeroAddress } from "viem";
-import { watchBlockNumber, readContracts } from "@wagmi/core";
-import { wagmiConfig } from "@/lib/dapp/wagmi";
-import { useAccount } from "wagmi";
-import { JSONStringify } from "@/lib/jsonStringify";
-import { useSwitchAppTab } from "@/hooks/useSwitchAppTab";
+import { useEffect, useRef, useState } from "react";
+import { useLTokenInfos } from "@/hooks/contracts/useLTokenInfos";
+import { useLTokenMultichainTvl } from "@/hooks/contracts/useLTokenMultichainTvl";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
+import { useSwitchAppTab } from "@/hooks/useSwitchAppTab";
+import { useAccount } from "wagmi";
 
-const availableChains = [42161, 59144, 8453];
-
-interface Pool {
+type Pool = {
   tokenSymbol: string;
   apr: number;
-  tvl: [bigint, number];
-  invested: [bigint, number];
-}
+  tvl: bigint;
+  invested: bigint;
+  decimals: number;
+};
 
-interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 /**
  * About 'tableData', 'futureTableData' and 'isActionsDialogOpen': As the table is automatically
  * refreshed when on-chain data changes, and while DepositDialog and WithdrawDialog contained in the
@@ -46,20 +45,47 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {}
  * 4. Finally, when the user closes the action modal, we call 'setTableData(futureTableData)' to provides it
  *    with most up to date data.
  */
-export const AppInvestTokens: FC<Props> = ({ className }) => {
+export function AppInvestTokens({ className }: { className?: string }) {
   const { switchTab } = useSwitchAppTab();
   const account = useAccount();
   const [sorting, setSorting] = useState<SortingState>([]);
   const columnHelper = createColumnHelper<Pool>();
   const lTokens = useAvailableLTokens();
-  const [readsConfig, setReadsConfig] = useState<
-    Parameters<typeof readContracts>[1]["contracts"]
-  >([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState<Pool[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const currentChain = useCurrentChain();
   let isActionsDialogOpen = useRef(false);
   let futureTableData = useRef<Pool[]>([]);
+
+  const tokenInfos = useLTokenInfos(
+    lTokens.map((symbol) => getContractAddress(symbol, currentChain?.id || 0)),
+    account.address,
+  );
+
+  const tvlData = useLTokenMultichainTvl();
+
+  useEffect(() => {
+    const newTableData = tokenInfos.map((data) => {
+      const { symbol, apr, balance, decimals } = data;
+      // @bw missing reflection of price on token TVL
+      const totalTvl =
+        tvlData.find((tvl) => tvl.symbol === symbol)?.totalTvl || 0n;
+
+      return {
+        tokenSymbol: symbol.slice(1),
+        invested: balance,
+        tvl: totalTvl,
+        decimals,
+        apr: apr,
+      };
+    });
+
+    // Update table data only if it has changed
+    if (JSON.stringify(tableData) != JSON.stringify(newTableData)) {
+      setTableData(newTableData);
+      setIsLoading(false);
+    }
+  }, [account.address, currentChain, tokenInfos, tvlData]);
 
   const columns = [
     columnHelper.accessor("tokenSymbol", {
@@ -93,8 +119,9 @@ export const AppInvestTokens: FC<Props> = ({ className }) => {
     }),
     columnHelper.accessor("tvl", {
       cell: (info) => {
-        const [amount, decimals] = info.getValue() as [bigint, number];
-        const tokenSymbol = info.row.getValue("tokenSymbol") as string;
+        const amount = info.getValue();
+        const decimals = info.row.original.decimals;
+        const tokenSymbol = info.row.original.tokenSymbol;
         return (
           <Amount
             value={amount}
@@ -109,8 +136,9 @@ export const AppInvestTokens: FC<Props> = ({ className }) => {
     }),
     columnHelper.accessor("invested", {
       cell: (info) => {
-        const [amount, decimals] = info.getValue() as [bigint, number];
-        const tokenSymbol = info.row.getValue("tokenSymbol") as string;
+        const amount = info.getValue();
+        const decimals = info.row.original.decimals;
+        const tokenSymbol = info.row.original.tokenSymbol;
         return (
           <Amount
             value={amount}
@@ -192,140 +220,6 @@ export const AppInvestTokens: FC<Props> = ({ className }) => {
   });
 
   const headerGroup = table.getHeaderGroups()[0];
-
-  useEffect(() => {
-    // This array will host the reads requests configs built below
-    const newReadsConfig = [] as {
-      address: `0x${string}`;
-      abi: any;
-      functionName: string;
-      args?: any[];
-      chainId?: number;
-    }[];
-
-    if (!currentChain) return;
-
-    // Push read calls for total supply and decimals of each lToken
-    for (const lTokenSymbol of lTokens) {
-      // Retrieve L-Token address on current chain
-      const lTokenAddress = getContractAddress(lTokenSymbol, currentChain.id);
-
-      // If L-Token is not available on the current chain, skip
-      if (!lTokenAddress) continue;
-
-      // Populate required reads requests
-      ["symbol", "decimals", "totalSupply", "getAPR"].forEach(
-        (functionName) => {
-          newReadsConfig.push({
-            address: lTokenAddress,
-            abi: lTokenAbi,
-            functionName: functionName,
-          });
-        },
-      );
-      newReadsConfig.push({
-        address: lTokenAddress,
-        abi: lTokenAbi,
-        functionName: "balanceOf",
-        args: [account.address || zeroAddress],
-      });
-
-      // Also read TVL from each chain the L-Token is available on
-      for (const chainId of availableChains) {
-        // Skip if current chain
-        if (chainId === currentChain.id) continue;
-
-        // Retrieve L-Token address on other chain
-        const chainLTokenAddress = getContractAddress(lTokenSymbol, chainId);
-
-        // If L-Token is not available on the other chain, skip
-        if (!chainLTokenAddress) continue;
-
-        newReadsConfig.push({
-          address: chainLTokenAddress,
-          abi: lTokenAbi,
-          functionName: "totalSupply",
-          chainId: chainId,
-        });
-      }
-    }
-
-    if (JSON.stringify(newReadsConfig) !== JSON.stringify(readsConfig)) {
-      setIsLoading(true);
-      setReadsConfig(newReadsConfig);
-    }
-
-    // Clear configs on unmount/cleanup
-    return () => {
-      setReadsConfig([]);
-    };
-  }, [account.address, currentChain]);
-
-  useEffect(() => {
-    const unwatchFn = watchBlockNumber(wagmiConfig, {
-      async onBlockNumber(blockNumber) {
-        if (!currentChain) return;
-        if (blockNumber % 5n !== 0n && tableData.length) return;
-
-        const data = await readContracts(wagmiConfig, {
-          contracts: readsConfig,
-        });
-
-        if (!data?.length || data.some((item) => item?.status !== "success")) {
-          return;
-        }
-
-        const nbDataPointsPerToken = 5 + availableChains.length - 1;
-
-        if (data.length % nbDataPointsPerToken !== 0) {
-          console.warn("Invalid data length: ", data.length);
-          return;
-        }
-
-        const nbTokenDatas = data.length / nbDataPointsPerToken;
-
-        const newTableData: Pool[] = [];
-        for (let i = 0; i < nbTokenDatas; i++) {
-          const symbol = data[i * 5]!.result as string;
-          const decimals = data[i * 5 + 1].result as number;
-          const totalSupply = data[i * 5 + 2].result as bigint;
-          const apr = data[i * 5 + 3].result as number;
-          const balance = data[i * 5 + 4].result as bigint;
-
-          const tvl = data
-            .slice(
-              i * nbDataPointsPerToken + 5,
-              i * nbDataPointsPerToken + 5 + availableChains.length - 1,
-            )
-            .reduce((acc, el, j) => {
-              // @bw missing reflection of price on token TVL
-              return acc + (el?.result as bigint);
-            }, totalSupply);
-
-          newTableData.push({
-            tokenSymbol: symbol.slice(1),
-            invested: [balance, decimals],
-            tvl: [tvl, decimals],
-            apr: apr,
-          });
-        }
-
-        // Update table data only if it has changed
-        if (JSONStringify(tableData) != JSONStringify(newTableData)) {
-          setTableData(newTableData);
-        }
-
-        setIsLoading(false);
-      },
-    });
-
-    // Cleanup function
-    return () => {
-      unwatchFn();
-      setTableData([]);
-      setIsLoading(false);
-    };
-  }, [readsConfig]);
 
   return (
     <article
@@ -443,4 +337,4 @@ export const AppInvestTokens: FC<Props> = ({ className }) => {
       })()}
     </article>
   );
-};
+}
