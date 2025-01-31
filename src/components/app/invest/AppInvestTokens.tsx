@@ -15,8 +15,9 @@ import { TokenLogo } from "../../ui/TokenLogo";
 import { DepositDialog } from "../DepositDialog";
 import { WithdrawDialog } from "../WithdrawDialog";
 // Functions
-import { fetchTokenPriceUsd } from "../../../functions/fetchTokenPriceUsd";
+import { formatUnits } from "viem";
 // Hooks
+import { useTokenPricesUsd } from "../../../hooks/api/useTokenPricesUsd";
 import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
 import { useEffect, useRef, useState } from "react";
 import { useLTokenInfos } from "@/hooks/contracts/useLTokenInfos";
@@ -28,7 +29,7 @@ import { useAccount } from "wagmi";
 type Pool = {
   underlyingSymbol: string;
   apr: number;
-  tvl: bigint;
+  tvl: number;
   invested: bigint;
   decimals: number;
 };
@@ -62,14 +63,25 @@ export function AppInvestTokens({ className }: { className?: string }) {
     account.address,
   );
 
+  const underlyingPrices = useTokenPricesUsd(
+    tokenInfos.map((info) => info.symbol.slice(1)),
+  );
+
   const tvlData = useLTokenMultichainTvl();
 
   useEffect(() => {
     const newTableData = tokenInfos.map((data) => {
       const { symbol, apr, balance, decimals } = data;
-      // @bw missing reflection of price on token TVL
+      const tokenPriceUsd =
+        underlyingPrices[symbol.toLowerCase().slice(1)] || 1;
+
       const totalTvl =
-        tvlData.find((tvl) => tvl.symbol === symbol)?.totalTvl || 0n;
+        Number(
+          formatUnits(
+            tvlData.find((tvl) => tvl.symbol === symbol)?.totalTvl || 0n,
+            decimals,
+          ),
+        ) * tokenPriceUsd;
 
       return {
         underlyingSymbol: symbol.slice(1),
@@ -85,7 +97,7 @@ export function AppInvestTokens({ className }: { className?: string }) {
       setTableData(newTableData);
       setIsLoading(false);
     }
-  }, [account.address, currentChain, tokenInfos, tvlData]);
+  }, [account.address, currentChain, tokenInfos, tvlData, underlyingPrices]);
 
   const columns = [
     columnHelper.accessor("underlyingSymbol", {
@@ -120,13 +132,11 @@ export function AppInvestTokens({ className }: { className?: string }) {
     columnHelper.accessor("tvl", {
       cell: (info) => {
         const amount = info.getValue();
-        const decimals = info.row.original.decimals;
-        const underlyingSymbol = info.row.original.underlyingSymbol;
         return (
           <Amount
             value={amount}
-            decimals={decimals}
-            suffix={underlyingSymbol}
+            decimals={0} // already formatted
+            prefix={"$ "} // expressed in USD
             displaySymbol={false}
             className="text-lg font-semibold "
           />

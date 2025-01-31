@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 
+// @dev to try it out in browser
+// https://api.coingecko.com/api/v3/simple/price?ids=euro-coin&vs_currencies=usd
+
 const symbolToId = [
   {
     id: "euro-coin",
