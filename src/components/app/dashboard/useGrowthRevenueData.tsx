@@ -3,11 +3,12 @@ import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { wagmiConfig } from "@/lib/dapp/wagmi";
 import { getContractAddress } from "@/lib/getContractAddress";
-import { getTokenUSDRate } from "@/lib/getTokenUSDRate";
 import { Activity, LToken, RewardsMint, execute } from "graphclient";
 import { useCallback, useEffect, useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
+// Functions
+import { fetchTokenPriceUsd } from "../../../functions/fetchTokenPriceUsd";
 
 type TokenData = {
   [ltokenNames: string]: {
@@ -163,7 +164,7 @@ export function useGrowthRevenueData(): {
       }
 
       for (const rewardsMint of mintsEventsData) {
-        const usdRate = await getTokenUSDRate(
+        const usdRate = await fetchTokenPriceUsd(
           rewardsMint.ltoken.symbol.slice(1),
         );
 
@@ -214,7 +215,7 @@ export function useGrowthRevenueData(): {
               functionName: "unmintedRewardsOf",
               args: [account.address],
             }),
-            getTokenUSDRate(underlyingSymbol),
+            fetchTokenPriceUsd(underlyingSymbol),
           ]);
 
         // Convert revenue to decimals and then to USD

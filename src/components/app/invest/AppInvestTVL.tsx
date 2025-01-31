@@ -1,6 +1,5 @@
 import { Amount, Card, Spinner } from "@/components/ui";
 import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
-import { getTokenUSDRate } from "@/lib/getTokenUSDRate";
 import { FC, useEffect, useState } from "react";
 import { getContractAddress } from "@/lib/getContractAddress";
 import { lTokenAbi } from "@/generated";
@@ -8,6 +7,8 @@ import { formatUnits, parseUnits } from "viem";
 import { watchBlockNumber, readContracts } from "@wagmi/core";
 import { wagmiConfig } from "@/lib/dapp/wagmi";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
+// Functions
+import { fetchTokenPriceUsd } from "../../../functions/fetchTokenPriceUsd";
 
 const availableChains = [42161, 59144];
 
@@ -87,7 +88,7 @@ export const AppInvestTVL: FC<Props> = (props) => {
               if (!lTokenTotalSupply || !lTokenDecimals) continue;
 
               // Retrieve underlying token USD rate
-              const usdRate = await getTokenUSDRate(underlyingSymbol).then(
+              const usdRate = await fetchTokenPriceUsd(underlyingSymbol).then(
                 (rate) => rate.toString(),
               );
 
