@@ -39,9 +39,9 @@ export const AppInvestTVL: FC<Props> = (props) => {
         const lTokenAddress = getContractAddress(lTokenSymbol, chainId);
 
         if (!lTokenAddress) {
-          console.warn(
-            `Address for ${lTokenSymbol} not found on chain ${chainId}`,
-          );
+          // console.warn(
+          //   `Address for ${lTokenSymbol} not found on chain ${chainId}`,
+          // );
           continue;
         }
 

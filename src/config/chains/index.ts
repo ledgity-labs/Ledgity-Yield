@@ -25,7 +25,7 @@ export enum ChainId {
   XLAYER = Number(196),
 }
 
-// @bw graph endpoints
+// @bw graph endpoints, redundant / conflicting with graphclient
 export const SUBGRAPH_CLIENT_URLS = {
   [ChainId.BASE_SEPOLIA]:
     "https://api.studio.thegraph.com/query/60646/ldystaking-subgraph/version/latest",

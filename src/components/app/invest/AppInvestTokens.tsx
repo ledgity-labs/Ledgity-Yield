@@ -26,7 +26,7 @@ import { useSwitchAppTab } from "@/hooks/useSwitchAppTab";
 import { useAccount } from "wagmi";
 
 type Pool = {
-  tokenSymbol: string;
+  underlyingSymbol: string;
   apr: number;
   tvl: bigint;
   invested: bigint;
@@ -72,7 +72,7 @@ export function AppInvestTokens({ className }: { className?: string }) {
         tvlData.find((tvl) => tvl.symbol === symbol)?.totalTvl || 0n;
 
       return {
-        tokenSymbol: symbol.slice(1),
+        underlyingSymbol: symbol.slice(1),
         invested: balance,
         tvl: totalTvl,
         decimals,
@@ -88,19 +88,19 @@ export function AppInvestTokens({ className }: { className?: string }) {
   }, [account.address, currentChain, tokenInfos, tvlData]);
 
   const columns = [
-    columnHelper.accessor("tokenSymbol", {
+    columnHelper.accessor("underlyingSymbol", {
       header: "Name",
       cell: (info) => {
-        const tokenSymbol = info.getValue();
+        const underlyingSymbol = info.getValue();
         return (
           <div className="inline-flex items-center gap-2.5">
             <TokenLogo
-              symbol={tokenSymbol}
+              symbol={underlyingSymbol}
               size={35}
               className="border border-bg/80"
             />
             <p className="text-xl font-bold text-fg/80 min-[480px]:inline hidden">
-              {tokenSymbol}
+              {underlyingSymbol}
             </p>
           </div>
         );
@@ -121,12 +121,12 @@ export function AppInvestTokens({ className }: { className?: string }) {
       cell: (info) => {
         const amount = info.getValue();
         const decimals = info.row.original.decimals;
-        const tokenSymbol = info.row.original.tokenSymbol;
+        const underlyingSymbol = info.row.original.underlyingSymbol;
         return (
           <Amount
             value={amount}
             decimals={decimals}
-            suffix={tokenSymbol}
+            suffix={underlyingSymbol}
             displaySymbol={false}
             className="text-lg font-semibold "
           />
@@ -138,12 +138,12 @@ export function AppInvestTokens({ className }: { className?: string }) {
       cell: (info) => {
         const amount = info.getValue();
         const decimals = info.row.original.decimals;
-        const tokenSymbol = info.row.original.tokenSymbol;
+        const underlyingSymbol = info.row.original.underlyingSymbol;
         return (
           <Amount
             value={amount}
             decimals={decimals}
-            suffix={tokenSymbol}
+            suffix={underlyingSymbol}
             displaySymbol={false}
             className="text-lg font-semibold text-fg/90"
           />
@@ -155,11 +155,11 @@ export function AppInvestTokens({ className }: { className?: string }) {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const tokenSymbol = row.getValue("tokenSymbol") as string;
+        const underlyingSymbol = row.getValue("underlyingSymbol") as string;
         return (
           <div className="flex items-center sm:gap-4 gap-2">
             <DepositDialog
-              underlyingSymbol={tokenSymbol}
+              underlyingSymbol={underlyingSymbol}
               onOpenChange={(o) => {
                 isActionsDialogOpen.current = o;
                 if (o === false && futureTableData.current.length > 0) {
@@ -179,7 +179,7 @@ export function AppInvestTokens({ className }: { className?: string }) {
               </Button>
             </DepositDialog>
             <WithdrawDialog
-              underlyingSymbol={tokenSymbol}
+              underlyingSymbol={underlyingSymbol}
               onOpenChange={(o) => {
                 isActionsDialogOpen.current = o;
                 if (o === false && futureTableData.current.length > 0) {
@@ -234,7 +234,7 @@ export function AppInvestTokens({ className }: { className?: string }) {
             key={header.id}
             className={twMerge(
               "inline-flex items-center justify-center py-3 bg-fg/5 border-y border-y-fg/10 font-semibold text-fg/50",
-              header.column.id === "tokenSymbol" &&
+              header.column.id === "underlyingSymbol" &&
                 "justify-start sm:pl-10 pl-5",
               header.column.id === "invested" && "md:inline-flex hidden",
             )}
