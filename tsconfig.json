@@ -12,6 +12,11 @@
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
+  "lib": [
+    "dom.iterable",
+    "ESNext",
+    "DOM"
+  ],
   "ts-node": {
     "esm": true,
     "experimentalResolver": true,
