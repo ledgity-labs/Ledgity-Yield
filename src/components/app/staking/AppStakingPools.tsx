@@ -82,28 +82,27 @@ export const AppStakingPools: FC<{
         )}
       >
         <CarouselContent className="-ml-1">
-          {stakingPools !== undefined &&
-            stakingPools.map((poolInfo, index) => (
-              <AppStakingPoolPane
-                key={index}
-                poolInfo={poolInfo}
-                poolIndex={index}
-                ldyTokenDecimals={ldyTokenDecimals ? ldyTokenDecimals : 18}
-                userStakingInfo={
-                  userStakingInfo &&
-                  userStakingInfo.stakingUsers &&
-                  userStakingInfo.stakingUsers[index]
-                    ? userStakingInfo.stakingUsers[index]
-                    : undefined
-                }
-                rewardsArray={rewardsArray ? rewardsArray : undefined}
-                rewardRate={rewardRate}
-                totalWeightedStake={totalWeightedStake}
-                getUserStakesQuery={getUserStakesQuery}
-                ldyTokenBalanceQuery={ldyTokenBalanceQuery}
-                rewardsArrayQuery={rewardsArrayQuery}
-              />
-            ))}
+          {stakingPools?.map((poolInfo, index) => (
+            <AppStakingPoolPane
+              key={index}
+              poolInfo={poolInfo}
+              poolIndex={index}
+              ldyTokenDecimals={ldyTokenDecimals ? ldyTokenDecimals : 18}
+              userStakingInfo={
+                userStakingInfo &&
+                userStakingInfo.stakingUsers &&
+                userStakingInfo.stakingUsers[index]
+                  ? userStakingInfo.stakingUsers[index]
+                  : undefined
+              }
+              rewardsArray={rewardsArray ? rewardsArray : undefined}
+              rewardRate={rewardRate}
+              totalWeightedStake={totalWeightedStake}
+              getUserStakesQuery={getUserStakesQuery}
+              ldyTokenBalanceQuery={ldyTokenBalanceQuery}
+              rewardsArrayQuery={rewardsArrayQuery}
+            />
+          ))}
         </CarouselContent>
         <CarouselPrevious size="tiny" />
         <CarouselNext size="tiny" />

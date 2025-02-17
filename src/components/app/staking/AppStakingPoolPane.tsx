@@ -106,7 +106,7 @@ export const AppStakingPoolPane: FC<{
           <div className="flex text-sm justify-between">
             <span>Earned</span>
             <span className="font-semibold">
-              {userStakingInfo
+              {userStakingInfo?.earnedAmount
                 ? Number(
                     formatUnits(
                       BigInt(userStakingInfo.earnedAmount),
@@ -160,7 +160,7 @@ export const AppStakingPoolPane: FC<{
               disabled={
                 Number(
                   formatUnits(
-                    BigInt(rewardsArray ? rewardsArray[poolIndex] : 0),
+                    BigInt(rewardsArray?.[poolIndex] || 0),
                     ldyTokenDecimals!,
                   ),
                 ) < 0.0001
@@ -171,7 +171,7 @@ export const AppStakingPoolPane: FC<{
               CLAIM{" "}
               {Number(
                 formatUnits(
-                  BigInt(rewardsArray ? rewardsArray[poolIndex] : 0),
+                  BigInt(rewardsArray?.[poolIndex] || 0),
                   ldyTokenDecimals!,
                 ),
               ).toFixed(4)}{" "}
