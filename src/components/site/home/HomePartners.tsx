@@ -2,6 +2,7 @@ import Image from "next/image";
 import { FC } from "react";
 import { Cube } from "@/components/ui";
 import Link from "next/link";
+import chainlinkLogo from "~/assets/partners/chainlink.svg";
 import adanLogo from "~/assets/partners/adan.svg";
 import arbitrumLogo from "~/assets/partners/arbitrum.svg";
 import circleLogo from "~/assets/partners/circle.png";
@@ -43,6 +44,15 @@ const HomePartners: FC = () => {
             className="inline-flex min-h-[60px] items-center justify-center rounded-2xl bg-gradient-radial from-bg/50 to-transparent opacity-80 backdrop-blur-md transition hover:opacity-100"
           >
             <Image src={bitmartLogo} alt="Bitmart Logo" height={45} />
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="https://chain.link/"
+            target="_blank"
+            className="inline-flex min-h-[60px] items-center justify-center rounded-2xl bg-gradient-radial from-bg/50 to-transparent opacity-80 backdrop-blur-md transition hover:opacity-100"
+          >
+            <Image src={chainlinkLogo} alt="Chainlink Logo" height={45} />
           </Link>
         </li>
         <li>

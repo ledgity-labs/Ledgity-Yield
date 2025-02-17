@@ -134,7 +134,7 @@ export const WithdrawDialog: FC<Props> = ({
             return (
               <>
                 <DialogHeader>
-                  <DialogTitle>Witdhraw {underlyingSymbol}</DialogTitle>
+                  <DialogTitle>Withdraw {underlyingSymbol}</DialogTitle>
                   <DialogDescription>
                     <div>
                       <span className="mb-1 inline-block text-xl font-semibold text-primary">

@@ -47,7 +47,7 @@ const HomeHero: FC<Props> = ({ className }) => {
                 <p>LDY Token</p>
               </div>
               <div className="flex items-center justify-center bg-gradient-to-bl from-[#20456c]/50 to-[red] gap-2 px-4 py-2 text-center text-lg font-semibold text-white md:px-3 md:py-1.5 ">
-                Buy on MEXC, Bitmart or Uniswap
+                Buy on MEXC or Uniswap
                 <i className="ri-arrow-right-line text-xl font-bold text-orange-[#20456c]" />
               </div>
             </div>
@@ -65,7 +65,7 @@ const HomeHero: FC<Props> = ({ className }) => {
         <div className="mt-14 flex w-screen flex-col items-center justify-center xl:mt-20">
           <div className="dark-neon min-w-[700px] sm:min-w-[1300px] md:min-w-[1300px] lg:min-w-[1800px]" />
           <ul className="flex items-center justify-center gap-24 px-14 lg:mt-2 lg:gap-32">
-            <li className="hidden_  sm:text-left text-center md:block_">
+            <li className="text-center block">
               <span
                 prefix="±"
                 className="font-heading text-7xl font-extrabold text-slate-50/[60%] lg:text-7xl"
@@ -74,14 +74,6 @@ const HomeHero: FC<Props> = ({ className }) => {
               </span>
               <h3 className="font-heading text-xl font-bold text-primary opacity-70">
                 APR
-              </h3>
-            </li>
-            <li className="hidden text-right sm:block">
-              <span className="font-heading text-7xl font-extrabold text-slate-50/[60%] lg:text-7xl">
-                ±0.1%
-              </span>
-              <h3 className="font-heading text-xl font-bold text-primary opacity-70">
-                <span className="opacity-70">(1Y)</span> Stability
               </h3>
             </li>
           </ul>

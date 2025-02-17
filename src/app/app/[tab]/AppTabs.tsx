@@ -47,7 +47,7 @@ const AppTabs: FC = () => {
             <p>LDY Token</p>
           </div>
           <div className="flex items-center justify-center bg-gradient-to-bl from-[#20456c]/50 to-[red] gap-2 px-4 py-2 text-center text-lg font-semibold text-white md:px-3 md:py-1.5 ">
-            Buy on MEXC, Bitmart or Uniswap
+            Buy on MEXC or Uniswap
             <i className="ri-arrow-right-line text-xl font-bold text-orange-[#20456c]" />
           </div>
         </div>

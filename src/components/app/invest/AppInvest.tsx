@@ -33,12 +33,6 @@ export const AppInvest: FC = () => {
               </h3>
               <AppInvestHoldersCount className="text-[1.92rem] text-fg/90 font-heading font-bold" />
             </div>
-            <div className="flex flex-col md:items-end items-start gap-2">
-              <h3 className="font-bold text-lg text-fg/50 whitespace-nowrap">
-                APR variations
-              </h3>
-              <AppInvestVariation className="text-[1.92rem] text-fg/90 font-heading font-bold" />
-            </div>
           </div>
         </div>
         <p className="sm:px-10 px-5 font-medium text-lg lg:w-[60%] md:w-[65%] sm:w-[80%] w-full text-fg/80 -mt-3">
