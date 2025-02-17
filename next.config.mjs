@@ -5,7 +5,7 @@ import "./env.mjs";
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   typescript: {
-    tsconfigPath: "./tsconfig.frontend.json",
+    tsconfigPath: "./src/tsconfig.json",
   },
   reactStrictMode: true,
   experimental: {
