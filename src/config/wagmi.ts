@@ -20,6 +20,9 @@ import {
   xdefiWallet,
   zerionWallet,
 } from "@rainbow-me/rainbowkit/wallets";
+import { getWagmiNetworkConfigs } from "../functions/marketsAndNetworksConfig";
+import { env } from "../../env.mjs";
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 
 export const wallets = [
   {
@@ -27,16 +30,16 @@ export const wallets = [
     wallets: [
       metaMaskWallet,
       rabbyWallet,
+      walletConnectWallet,
+      ledgerWallet,
       rainbowWallet,
       safeWallet,
-      ledgerWallet,
       trustWallet,
       okxWallet,
       phantomWallet,
       coinbaseWallet,
       braveWallet,
       argentWallet,
-      walletConnectWallet,
       injectedWallet,
     ],
   },
@@ -53,3 +56,11 @@ export const wallets = [
     ],
   },
 ];
+
+export const wagmiConfig = getDefaultConfig({
+  appName: "Ledgity Yield",
+  projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+  batch: { multicall: true },
+  chains: getWagmiNetworkConfigs(),
+  wallets,
+});
