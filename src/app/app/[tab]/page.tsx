@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import AppTabs from "./AppTabs";
+import { AppTabs } from "./AppTabs";
 
 export function generateStaticParams() {
   const tabs = ["dashboard", "invest", "airdrop", "get-usdc", "pre-mining"];
@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 //@ts-ignore
 const Page: NextPage = ({ params }: { params: { tab: string } }) => {
-  return <AppTabs defaultTab={params.tab} />;
+  return <AppTabs />;
 };
 
 export default Page;

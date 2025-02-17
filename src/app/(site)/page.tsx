@@ -5,7 +5,7 @@ import HomePartners from "@/components/site/home/HomePartners";
 import HomeHowItWorks from "@/components/site/home/HomeHowItWorks";
 import HomeFeatures from "@/components/site/home/HomeFeatures";
 import Footer from "@/components/Footer";
-import { useMainContext } from "@/hooks/useMainContext";
+import { useMainContext } from "@/hooks/context/useMainContextProvider";
 import { useSearchParams } from "next/navigation";
 
 //

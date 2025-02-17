@@ -3,10 +3,8 @@ import { AppDashboard } from "@/components/app/dashboard/AppDashboard";
 import { AppGetUSDC } from "@/components/app/get-usdc/AppGetUSDC";
 import { AppInvest } from "@/components/app/invest/AppInvest";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
-import { SwitchAppTabProvider } from "@/contexts/SwitchAppTabContext";
-import { useSwitchAppTab } from "@/hooks/useSwitchAppTab";
+import { useMainContext } from "@/hooks/context/useMainContextProvider";
 
-import { FC } from "react";
 import { twMerge } from "tailwind-merge";
 import { AppPreMining } from "@/components/app/pre-mining/AppPreMining";
 import { SessionProvider } from "next-auth/react";
@@ -17,20 +15,9 @@ import { AppAffiliate } from "@/components/app/affiliate/AppAffiliate";
 import { SwapWidget } from "../../../components/app/widget/SwapWidget";
 import { BridgeWidget } from "../../../components/app/widget/BridgeWidget";
 
-interface Props {
-  defaultTab: string;
-}
+export function AppTabs() {
+  const { currentTab, switchTab } = useMainContext();
 
-const AppTabsSwitch: FC<Props> = ({ defaultTab }) => {
-  return (
-    <SwitchAppTabProvider defaultTab={defaultTab}>
-      <AppTabs />
-    </SwitchAppTabProvider>
-  );
-};
-
-const AppTabs: FC = () => {
-  const { currentTab, switchTab } = useSwitchAppTab();
   return (
     <Tabs
       value={currentTab}
@@ -113,6 +100,4 @@ const AppTabs: FC = () => {
       </div>
     </Tabs>
   );
-};
-
-export default AppTabsSwitch;
+}

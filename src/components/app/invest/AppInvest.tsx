@@ -5,12 +5,9 @@ import { AppInvestVariation } from "./AppInvestVariation";
 import { AppInvestTokens } from "./AppInvestTokens";
 import { Card } from "@/components/ui";
 import Link from "next/link";
-import { useSwitchAppTab } from "@/hooks/useSwitchAppTab";
 import { AppInvestHoldersCount } from "./AppInvestHoldersCount";
 
 export const AppInvest: FC = () => {
-  const { switchTab } = useSwitchAppTab();
-
   return (
     <div className="lg:w-[980px] w-full flex flex-col gap-8 pb-8">
       <Card

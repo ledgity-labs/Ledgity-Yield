@@ -23,7 +23,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLTokenInfos } from "@/hooks/contracts/useLTokenInfos";
 import { useLTokenMultichainTvl } from "@/hooks/contracts/useLTokenMultichainTvl";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
-import { useSwitchAppTab } from "@/hooks/useSwitchAppTab";
+import { useMainContext } from "@/hooks/context/useMainContextProvider";
 import { useAccount } from "wagmi";
 
 type Pool = {
@@ -47,7 +47,7 @@ type Pool = {
  *    with most up to date data.
  */
 export function AppInvestTokens({ className }: { className?: string }) {
-  const { switchTab } = useSwitchAppTab();
+  const { switchTab } = useMainContext();
   const account = useAccount();
   const [sorting, setSorting] = useState<SortingState>([]);
   const columnHelper = createColumnHelper<Pool>();
