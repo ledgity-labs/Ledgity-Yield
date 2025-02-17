@@ -5,7 +5,7 @@ import { getContractAddress } from "@/lib/getContractAddress";
 import { lTokenAbi } from "@/generated";
 import { formatUnits, parseUnits } from "viem";
 import { watchBlockNumber, readContracts } from "@wagmi/core";
-import { wagmiConfig } from "@/lib/dapp/wagmi";
+import { wagmiConfig } from "../../../config/wagmi";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
 // Functions
 import { fetchTokenPriceUsd } from "../../../functions/fetchTokenPriceUsd";

@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
-import { graphClientWithChain } from "@/services/graph/requests/client";
-import { ChainId } from "@/config/chains";
-import { GraphQLClient, gql } from "graphql-request";
+import {
+  graphClientWithChain,
+  ChainId,
+} from "@/services/graph/requests/client";
 
-const useGraphEvent = (query: string, variables: any): any => {
+export function useGraphEvent(query: string, variables: any): any {
   const chain = useCurrentChain();
   return useQuery({
     queryKey: [query, chain?.id],
@@ -15,6 +16,4 @@ const useGraphEvent = (query: string, variables: any): any => {
       );
     },
   });
-};
-
-export default useGraphEvent;
+}

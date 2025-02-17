@@ -36,13 +36,8 @@ import {
   writeLTokenProcessBigQueuedRequest,
 } from "@/generated";
 import clsx from "clsx";
-import {
-  UseSimulateContractReturnType,
-  useAccount,
-  useBlockNumber,
-} from "wagmi";
-import { useQueryClient } from "@tanstack/react-query";
-import { wagmiConfig } from "@/lib/dapp/wagmi";
+import { UseSimulateContractReturnType, useAccount } from "wagmi";
+import { wagmiConfig } from "../../../config/wagmi";
 
 interface ProcessBigRequestButtonProps {
   lTokenAddress: `0x${string}`;
@@ -198,7 +193,7 @@ export const AdminLTokenWithdrawalRequests: FC<Props> = ({ lTokenSymbol }) => {
             // Skip already processed requests
             if (Number(account) == 0) continue;
             // Else, add request data to the new data array
-           
+
             newRequestsData.push({
               id: i,
               account: account,

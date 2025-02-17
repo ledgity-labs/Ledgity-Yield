@@ -1,7 +1,7 @@
 import { readLToken } from "@/generated";
 import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
-import { wagmiConfig } from "@/lib/dapp/wagmi";
+import { wagmiConfig } from "../../../config/wagmi";
 import { getContractAddress } from "@/lib/getContractAddress";
 import { Activity, LToken, RewardsMint, execute } from "graphclient";
 import { useCallback, useEffect, useState } from "react";

@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import useGraphEvent from "../useGraphEvent";
+import { useGraphEvent } from "../useGraphEvent";
 import {
   STAKING_APR_INFO_QUERY,
   USER_STAKING_QUERY,
