@@ -12,6 +12,7 @@ import Header from "@/components/Header";
 import Script from "next/script";
 import { Toaster } from "@/components/ui/Toaster";
 // import DApp from "@/components/DApp";
+import App from "../components/App";
 
 const name = "Ledgity Yield";
 const description =
@@ -73,10 +74,10 @@ interface Props {
 
 const RootLayout: NextPage<Props> = ({ children }) => {
   // Force DApp to be loaded dynamically without SSR
-  const DApp = dynamic(() => import("@/components/DApp"), {
-    loading: Loader,
-    ssr: false,
-  });
+  // const App = dynamic(() => import("@/components/App"), {
+  //   loading: Loader,
+  //   ssr: false,
+  // });
 
   return (
     <html lang="en">
@@ -90,7 +91,7 @@ const RootLayout: NextPage<Props> = ({ children }) => {
       >
         <CardsHelper />
         <TooltipProvider delayDuration={400}>
-          <DApp>
+          <App>
             <div className="max-w-screen relative overflow-x-hidden overflow-y-hidden">
               <Header />
               <main>
@@ -98,7 +99,7 @@ const RootLayout: NextPage<Props> = ({ children }) => {
                 <Toaster />
               </main>
             </div>
-          </DApp>
+          </App>
         </TooltipProvider>
 
         {/* Google tag (gtag.js) */}
@@ -111,6 +112,9 @@ const RootLayout: NextPage<Props> = ({ children }) => {
  
           gtag('config', 'G-90LEKEYYXG');
         `}
+        </Script>
+        <Script>
+          {`var script=document.createElement('script');script.src="https://tag.safary.club/stag-0.1.16.js";script.async=true;script.setAttribute('data-name','safary-sdk');script.setAttribute('data-product-id','prd_TWojQkILET');script.integrity="sha256-jl67N5KgpOXS3tLPc6pUXU1UxJqBm9LUZtqX5H3jZ2U=";script.crossOrigin="anonymous";var target=document.head||document.body;target.appendChild(script);`}
         </Script>
       </body>
     </html>
