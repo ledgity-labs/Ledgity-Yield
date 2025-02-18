@@ -2,15 +2,14 @@
 
 import "@rainbow-me/rainbowkit/styles.css";
 import {
-  type DisclaimerComponent,
-  type AvatarComponent,
+  type DisclaimerComponent, 
   type Theme,
   lightTheme,
   RainbowKitProvider as _RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
 import { FC } from "react";
-import { WalletAvatar } from "@/components/ui";
+import { Blockie } from "@/components/icons/Blockie";
 
 // Built RainbowKit theme
 const ledgityTheme: Theme = merge(lightTheme(), {
@@ -47,7 +46,7 @@ const RainbowKitProvider: FC<Props> = ({ children }) => {
       appInfo={{
         disclaimer: Disclaimer,
       }}
-      avatar={WalletAvatar as AvatarComponent}
+      avatar={Blockie}
       theme={ledgityTheme}
       showRecentTransactions={true}
     >
