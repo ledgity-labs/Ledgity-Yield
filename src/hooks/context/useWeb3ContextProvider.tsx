@@ -1,5 +1,3 @@
-"use client";
-
 import {
   useAccount,
   useBalance,
@@ -8,6 +6,7 @@ import {
   useSwitchChain,
   usePublicClient,
 } from "wagmi";
+import { useLocalStorage } from "../utils/useLocalStorage";
 import { mainnet, arbitrum } from "wagmi/chains";
 import { PublicClient } from "viem";
 import React, {
@@ -118,19 +117,22 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({
   );
 
   // Testnet display handling
-  const [displayTestnets, setDisplayTestnets] = useState(
-    () => localStorage.getItem("displayTesnets") === "true",
+  const [displayTestnets, setDisplayTestnets] = useLocalStorage<boolean>(
+    "displayTesnets",
+    false,
   );
 
   function handleSetDisplayTestnets(value: boolean) {
-    localStorage.setItem("displayTesnets", String(value));
     setDisplayTestnets(value);
   }
 
   // Network handling
+  const [storedChainId, setStoredChainId] = useLocalStorage<string>(
+    "chainId",
+    String(getDefaultChainId()),
+  );
   const [appChainId, setAppChainId] = useState<number>(() => {
     if (isConnected && chain?.id) return chain.id;
-    const storedChainId = localStorage.getItem("chainId");
     return storedChainId ? parseInt(storedChainId) : getDefaultChainId();
   });
 
@@ -186,7 +188,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({
       }
 
       // Update local storage and app state
-      localStorage.setItem("chainId", String(newChainId));
+      setStoredChainId(String(newChainId));
       setAppChainId(newChainId);
     } catch (err: any) {
       console.error("Error switching network:", err.message);
