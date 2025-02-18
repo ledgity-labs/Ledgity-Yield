@@ -1,95 +1,101 @@
 "use client";
+
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
-import Image from "next/image";
 import {
   Button,
-  WalletName,
-  WalletAvatar,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  WalletName,
 } from "@/components/ui";
-import { chains, chainsIcons } from "@/lib/dapp/chains";
-import clsx from "clsx";
-import React from "react";
-import { useAccount, useSwitchChain } from "wagmi";
-import { useCurrentChain } from "@/hooks/useCurrentChain";
+import { useState, useEffect } from "react";
+import { NetworkIcon } from "../icons/NetworkIcon";
+import { Blockie } from "../icons/Blockie";
+// Context
+import { useWeb3Context } from "../../hooks/context/useWeb3ContextProvider";
+// Data
+import {
+  getNetworkConfig,
+  getNetworkConfigs,
+} from "../../functions/marketsAndNetworksConfig";
 
-// Used as select value when no network or a wrong one is selected
-const placeholder = <p>Select a network...</p>;
+export function ConnectButton() {
+  const [isMounted, setIsMounted] = useState(false);
 
-export const ConnectButton = () => {
-  const account = useAccount();
-  const { switchChain, isPending } = useSwitchChain();
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const { openAccountModal } = useAccountModal();
   const { openConnectModal } = useConnectModal();
-  const chain = useCurrentChain();
+  const {
+    currentAccount,
+    walletChainId,
+    isConnected,
+    appChainId,
+    handleSwitchNetwork,
+    currentNetworkConfig,
+    isChangingNetwork,
+  } = useWeb3Context();
 
-  const wrongNetwork = !chain || !chain.id ? true : false;
+  function handleChangeNetwork(newChainid: string) {
+    handleSwitchNetwork(Number(newChainid));
+  }
+
+  const networkConfigs = getNetworkConfigs();
+  const isCompatibleNetwork = isConnected
+    ? getNetworkConfig(walletChainId)?.isCompatibleNetwork
+    : currentNetworkConfig.isCompatibleNetwork;
+  const wrongNetwork = !isCompatibleNetwork;
+
+  // Return a simple placeholder during server-side rendering
+  if (!isMounted) {
+    return (
+      <div className="flex sm:gap-6 gap-3 justify-center items-center">
+        <div className="h-10 w-32 bg-gray-200 animate-pulse rounded"></div>
+        <div className="h-10 w-36 bg-gray-200 animate-pulse rounded"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex sm:gap-6 gap-3 justify-center items-center">
-      <Select
-        onValueChange={(value) => switchChain({ chainId: Number(value) })}
-        value={chain?.id.toString()}
-      >
-        <SelectTrigger isLoading={isPending}>
-          {wrongNetwork ? (
-            placeholder
-          ) : (
-            <SelectValue placeholder={placeholder} />
-          )}
+      <Select onValueChange={handleChangeNetwork} value={appChainId.toString()}>
+        <SelectTrigger isLoading={isChangingNetwork}>
+          <SelectValue placeholder="Select a network..." />
         </SelectTrigger>
-
         <SelectContent>
-          {chains.map((_chain, i) => (
-            <SelectItem value={_chain.id.toString()} key={i}>
+          {networkConfigs.map((config, i) => (
+            <SelectItem value={config.chainId.toString()} key={i}>
               <div className="flex justify-center items-center gap-[0.6rem]">
-                <Image
-                  alt={_chain.name ?? "Chain icon"}
-                  src={chainsIcons[_chain.id] ?? ""}
-                  width={20}
-                  height={20}
-                  className="sm:w-6 w-7 sm:h-6 h-7 rounded-md overflow-hidden"
-                />
-                <p className="font-semibold sm:inline hidden">{_chain.name}</p>
+                <NetworkIcon chainName={config.name} chainId={config.chainId} />
+                <span className="font-semibold sm:inline hidden">
+                  {config.name}
+                </span>
               </div>
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      {(account && account.address && (
+      {isConnected ? (
         <Button
-          disabled={wrongNetwork || isPending}
+          disabled={wrongNetwork || isChangingNetwork}
           onClick={openAccountModal}
           size="medium"
           variant={wrongNetwork ? "destructive" : "primary"}
-          className={clsx(
-            "flex justify-between gap-3 overflow-hidden",
-            !wrongNetwork && "pr-[5px]",
-          )}
+          className="flex justify-between gap-3 overflow-hidden pr-[5px]"
         >
-          {(!wrongNetwork && (
-            <>
-              <p className="min-[420px]:inline-block hidden">
-                <WalletName address={account.address as `0x${string}`} />
-              </p>
-              <WalletAvatar
-                address={account.address as `0x${string}`}
-                size={80}
-                className="rounded-r-[0.6rem] rounded-l-sm h-[calc(100%-10px)] min-[420px]:inline-block hidden"
-              />
-              {/* <div className="justify-center items-center sm:hidden inline-flex"> */}
-              <i className="ri-wallet-3-fill min-[420px]:hidden inline text-2xl pr-2" />
-              {/* </div> */}
-            </>
-          )) || <p>Wrong network</p>}
+          <span className="min-[420px]:inline-block hidden">
+            <WalletName address={currentAccount as `0x${string}`} />
+          </span>
+          <Blockie address={currentAccount} className="mr-2" />
+          <i className="ri-wallet-3-fill min-[420px]:hidden inline text-2xl pr-2" />
         </Button>
-      )) || (
+      ) : (
         <Button
-          disabled={wrongNetwork || isPending}
+          disabled={wrongNetwork || isChangingNetwork}
           size="large"
           onClick={openConnectModal}
         >
@@ -98,4 +104,4 @@ export const ConnectButton = () => {
       )}
     </div>
   );
-};
+}
