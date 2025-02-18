@@ -10,3 +10,10 @@ export type LTokenInfo = TokenInfo & {
   totalSupply: bigint;
   balance: bigint;
 };
+
+export type ERC20TokenType = {
+  address: string;
+  symbol: string;
+  decimals: number;
+  image?: string;
+};
