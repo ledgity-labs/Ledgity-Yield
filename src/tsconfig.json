@@ -42,6 +42,10 @@
     "../src/**/*.ts",
     "../src/**/*.tsx",
     "../public",
-    "../.graphclient"
+    "../.graphclient",
+    ".next/types/**/*.ts"
   ],
+  "exclude": [
+    "node_modules"
+  ]
 }
