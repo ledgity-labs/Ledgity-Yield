@@ -37,7 +37,6 @@ export function AppStakingPools({
     useReadLdyStakingGetUserStakes({
       args: [account.address || zeroAddress],
     });
-  console.log("stakingInfos: ", JSON.stringify(stakingInfos, null, 2));
 
   // Fetch claimable rewards array from ldyStaking Contract
   const { data: rewardsArray, queryKey: rewardsArrayQuery } =
@@ -81,39 +80,3 @@ export function AppStakingPools({
     </div>
   );
 }
-
-const userStakingInfo = {
-  stakingUsers: [
-    {
-      id: "0x117b4b046ad3b7f152a688dc9e5461c53b512dac-0",
-      user: "0x117b4b046ad3b7f152a688dc9e5461c53b512dac",
-      earnedAmount: "0",
-      stakedAmount: "1000000000000000000",
-      stakeIndex: "0",
-    },
-    {
-      id: "0x117b4b046ad3b7f152a688dc9e5461c53b512dac-1",
-      user: "0x117b4b046ad3b7f152a688dc9e5461c53b512dac",
-      earnedAmount: "0",
-      stakedAmount: "8000000000000000000",
-      stakeIndex: "1",
-    },
-  ],
-};
-
-const stakingInfos = [
-  {
-    stakedAmount: "1000000000000000000",
-    unStakeAt: "1735923717",
-    duration: "0",
-    rewardPerTokenPaid: "0",
-    rewards: "0",
-  },
-  {
-    stakedAmount: "8000000000000000000",
-    unStakeAt: "1735923813",
-    duration: "0",
-    rewardPerTokenPaid: "30441400304413920",
-    rewards: "0",
-  },
-];
