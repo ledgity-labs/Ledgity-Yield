@@ -10,8 +10,7 @@ import {
 import {
   AffiliateResponse,
   createAffiliateCode,
-  RequestParams,
-} from "@/services/api/createAffiliateCode";
+} from "@/functions/createAffiliateCode";
 import { FC, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { useCopyToClipboard } from "usehooks-ts";
@@ -41,10 +40,8 @@ export const AppAffiliate: FC = () => {
   const sendAffiliateRequest = async () => {
     if (walletAddress?.length) {
       setIsLoading(true);
-      const requestParams: RequestParams = {
-        walletAddress: getAddress(walletAddress),
-      };
-      const data = await createAffiliateCode(requestParams);
+
+      const data = await createAffiliateCode(getAddress(walletAddress));
       // setIsError(!data.isSuccess);
       // setErrorMsg(data.message);
       // setErrorMsg(data.message);
