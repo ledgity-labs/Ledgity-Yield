@@ -1,5 +1,3 @@
-![](https://github.com/LedgityLabs/LedgityYield/blob/main/src/app/twitter-image.jpg?raw=true)
-
 # Introduction
 
 **Ledgity Yield** is a protocol that provides stablecoins holders with a stable and scalable on-chain treasury management solution, backed by Real World Assets (RWA).
