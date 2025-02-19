@@ -6,48 +6,38 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/Carousel";
-import { useGetUserStakingsByAddress } from "@/services/graph";
-import { useAccount, usePublicClient } from "wagmi";
-import { formatUnits, zeroAddress } from "viem";
 import {
   useReadLdyStakingGetEarnedUser,
   useReadLdyStakingGetUserStakes,
 } from "@/generated";
 import { QueryKey, useQueryClient } from "@tanstack/react-query";
-import { twMerge } from "tailwind-merge";
-import { USER_STAKING_QUERY } from "@/services/graph/queries";
+import { zeroAddress } from "viem";
+import { useAccount, usePublicClient } from "wagmi";
 import { AppStakingPoolPane } from "./AppStakingPoolPane";
 
-export const AppStakingPools: FC<{
-  ldyTokenDecimals: number;
-  ldyTokenBalance: bigint;
-  ldyTokenBalanceQuery: QueryKey;
-  rewardRate: number;
-  totalWeightedStake: number;
-}> = ({
+export function AppStakingPools({
   ldyTokenDecimals,
   ldyTokenBalance,
   ldyTokenBalanceQuery,
   rewardRate,
   totalWeightedStake,
-}) => {
+}: {
+  ldyTokenDecimals: number;
+  ldyTokenBalance: bigint;
+  ldyTokenBalanceQuery: QueryKey;
+  rewardRate: number;
+  totalWeightedStake: number;
+}) {
   const queryClient = useQueryClient();
   const account = useAccount();
   const publicClient = usePublicClient();
 
-  // @bw graph implementation
-  // Fetch user staking info including earnedAmount from subgraph
-  const {
-    data: userStakingInfo,
-    refetch: refetchUserStakingInfo,
-    isFetching: isFetchingStakingInfo,
-  } = useGetUserStakingsByAddress(account.address || zeroAddress);
-
   // Fetch user staking info from ldyStaking contract
-  const { data: stakingPools, queryKey: getUserStakesQuery } =
+  const { data: stakingInfos, queryKey: getUserStakesQuery } =
     useReadLdyStakingGetUserStakes({
       args: [account.address || zeroAddress],
     });
+  console.log("stakingInfos: ", JSON.stringify(stakingInfos, null, 2));
 
   // Fetch claimable rewards array from ldyStaking Contract
   const { data: rewardsArray, queryKey: rewardsArrayQuery } =
@@ -61,52 +51,69 @@ export const AppStakingPools: FC<{
     queryKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
   }, [account.address, publicClient, ldyTokenBalance]);
 
-  // Refetch staking info(earned info) on rewardsArray change
-  useEffect(() => {
-    // Refetch after 3 seconds due to subgraph latency
-    const timeoutId = setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: [USER_STAKING_QUERY] });
-    }, 3000);
-    return () => clearTimeout(timeoutId);
-  }, [rewardsArray]);
-
   return (
     <div className="flex flex-col justify-start gap-y-2 p-4 h-full">
       <div className="font-heading font-bold text-xl text-white">
         MY $LDY POOLS
       </div>
-      <Carousel
-        className={twMerge(
-          "w-full justify-center",
-          (!stakingPools || !stakingPools.length) && "hidden",
-        )}
-      >
-        <CarouselContent className="-ml-1">
-          {stakingPools?.map((poolInfo, index) => (
-            <AppStakingPoolPane
-              key={index}
-              poolInfo={poolInfo}
-              poolIndex={index}
-              ldyTokenDecimals={ldyTokenDecimals ? ldyTokenDecimals : 18}
-              userStakingInfo={
-                userStakingInfo &&
-                userStakingInfo.stakingUsers &&
-                userStakingInfo.stakingUsers[index]
-                  ? userStakingInfo.stakingUsers[index]
-                  : undefined
-              }
-              rewardsArray={rewardsArray ? rewardsArray : undefined}
-              rewardRate={rewardRate}
-              totalWeightedStake={totalWeightedStake}
-              getUserStakesQuery={getUserStakesQuery}
-              ldyTokenBalanceQuery={ldyTokenBalanceQuery}
-              rewardsArrayQuery={rewardsArrayQuery}
-            />
-          ))}
-        </CarouselContent>
-        <CarouselPrevious size="tiny" />
-        <CarouselNext size="tiny" />
-      </Carousel>
+      {stakingInfos?.length && (
+        <Carousel className="w-full justify-center">
+          <CarouselContent className="-ml-1">
+            {stakingInfos.map((stakingInfo, i) => (
+              <AppStakingPoolPane
+                key={i}
+                stakingInfo={stakingInfo}
+                poolIndex={i}
+                ldyTokenDecimals={ldyTokenDecimals ? ldyTokenDecimals : 18}
+                rewardsArray={rewardsArray ? rewardsArray : undefined}
+                rewardRate={rewardRate}
+                totalWeightedStake={totalWeightedStake}
+                getUserStakesQuery={getUserStakesQuery}
+                ldyTokenBalanceQuery={ldyTokenBalanceQuery}
+                rewardsArrayQuery={rewardsArrayQuery}
+              />
+            ))}
+          </CarouselContent>
+          <CarouselPrevious size="tiny" />
+          <CarouselNext size="tiny" />
+        </Carousel>
+      )}
     </div>
   );
+}
+
+const userStakingInfo = {
+  stakingUsers: [
+    {
+      id: "0x117b4b046ad3b7f152a688dc9e5461c53b512dac-0",
+      user: "0x117b4b046ad3b7f152a688dc9e5461c53b512dac",
+      earnedAmount: "0",
+      stakedAmount: "1000000000000000000",
+      stakeIndex: "0",
+    },
+    {
+      id: "0x117b4b046ad3b7f152a688dc9e5461c53b512dac-1",
+      user: "0x117b4b046ad3b7f152a688dc9e5461c53b512dac",
+      earnedAmount: "0",
+      stakedAmount: "8000000000000000000",
+      stakeIndex: "1",
+    },
+  ],
 };
+
+const stakingInfos = [
+  {
+    stakedAmount: "1000000000000000000",
+    unStakeAt: "1735923717",
+    duration: "0",
+    rewardPerTokenPaid: "0",
+    rewards: "0",
+  },
+  {
+    stakedAmount: "8000000000000000000",
+    unStakeAt: "1735923813",
+    duration: "0",
+    rewardPerTokenPaid: "30441400304413920",
+    rewards: "0",
+  },
+];
