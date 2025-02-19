@@ -11,7 +11,6 @@ const nextConfig = {
   swcMinify: true,
   experimental: {
     serverComponentsExternalPackages: ["heavy-packages"],
-    optimizeCss: true,
     // typedRoutes: true, // Enable internal link type-checking (see: https://nextjs.org/docs/pages/building-your-application/configuring/typescript#statically-typed-links)
   },
   // Require by Wagmi work in Next.js client components

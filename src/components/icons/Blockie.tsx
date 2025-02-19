@@ -39,7 +39,7 @@ export function Blockie({
           alt="profile avatar"
         />
       ) : (
-        <img
+        <Image
           src={makeBlockie(!address ? "default" : address)}
           alt="account-blockie"
         />

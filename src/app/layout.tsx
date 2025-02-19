@@ -111,7 +111,7 @@ const RootLayout: NextPage<Props> = ({ children }) => {
           gtag('config', 'G-90LEKEYYXG');
         `}
         </Script>
-        <Script>
+        <Script id="safary-club">
           {`var script=document.createElement('script');script.src="https://tag.safary.club/stag-0.1.16.js";script.async=true;script.setAttribute('data-name','safary-sdk');script.setAttribute('data-product-id','prd_TWojQkILET');script.integrity="sha256-jl67N5KgpOXS3tLPc6pUXU1UxJqBm9LUZtqX5H3jZ2U=";script.crossOrigin="anonymous";var target=document.head||document.body;target.appendChild(script);`}
         </Script>
       </body>
