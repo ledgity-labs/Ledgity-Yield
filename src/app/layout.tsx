@@ -7,12 +7,10 @@ import { CardsHelper, TooltipProvider } from "@/components/ui";
 import { fonts } from "@/lib/fonts";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
-import Loader from "@/app/loading";
+import { LoadingPage } from "@/app/LoadingPage";
 import Header from "@/components/Header";
 import Script from "next/script";
 import { Toaster } from "@/components/ui/Toaster";
-// import DApp from "@/components/DApp";
-import App from "../components/App";
 
 const name = "Ledgity Yield";
 const description =
@@ -73,11 +71,11 @@ interface Props {
 }
 
 const RootLayout: NextPage<Props> = ({ children }) => {
-  // Force DApp to be loaded dynamically without SSR
-  // const App = dynamic(() => import("@/components/App"), {
-  //   loading: Loader,
-  //   ssr: false,
-  // });
+  // Loaded dynamically for faster initial load
+  const App = dynamic(() => import("@/components/App"), {
+    loading: LoadingPage,
+    ssr: false,
+  });
 
   return (
     <html lang="en">

@@ -1,13 +1,12 @@
 "use client";
-import React, { FC } from "react";
+
 import { AppInvestTVL } from "./AppInvestTVL";
-import { AppInvestVariation } from "./AppInvestVariation";
 import { AppInvestTokens } from "./AppInvestTokens";
 import { Card } from "@/components/ui";
 import Link from "next/link";
 import { AppInvestHoldersCount } from "./AppInvestHoldersCount";
 
-export const AppInvest: FC = () => {
+export function AppInvest() {
   return (
     <div className="lg:w-[980px] w-full flex flex-col gap-8 pb-8">
       <Card
@@ -60,4 +59,4 @@ export const AppInvest: FC = () => {
       </Card>
     </div>
   );
-};
+}
