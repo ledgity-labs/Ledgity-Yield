@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
-import { OneMonth, StakeDurations } from "@/constants/staking";
+import { OneMonth, StakeDurations } from "@/data/oldConstants";
 import { getAPRCalculation } from "@/lib/getAPRCalculation";
 import { QueryKey } from "@tanstack/react-query";
 import { getTimeLeftString } from "@/lib/utils";

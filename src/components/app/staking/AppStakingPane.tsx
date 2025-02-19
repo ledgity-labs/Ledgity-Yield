@@ -11,7 +11,7 @@ import { UseSimulateContractReturnType } from "wagmi";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { useSimulateLdyStakingStake } from "@/generated";
 import * as Slider from "@radix-ui/react-slider";
-import { StakeDurations } from "@/constants/staking";
+import { StakeDurations } from "@/data/oldConstants";
 import { getAPRCalculation } from "@/lib/getAPRCalculation";
 
 export const AppStakingPane: FC<{

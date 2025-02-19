@@ -2,7 +2,7 @@ import {
   OneMonth,
   StakeDurationMultipliers,
   MULTIPLIER_BASIS,
-} from "@/constants/staking";
+} from "@/data/oldConstants";
 import { parseUnits } from "viem";
 
 export const getAPRCalculation = (
