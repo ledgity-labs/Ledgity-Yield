@@ -7,7 +7,7 @@ import { CardsHelper, TooltipProvider } from "@/components/ui";
 import { fonts } from "@/lib/fonts";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
-import { LoadingPage } from "@/app/LoadingPage";
+import { LoadingPage } from "@/app/loading";
 import Header from "@/components/Header";
 import Script from "next/script";
 import { Toaster } from "@/components/ui/Toaster";

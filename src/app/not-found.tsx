@@ -1,15 +1,9 @@
 "use client";
 
 import { Button, Card } from "@/components/ui";
-import { type NextPage } from "next";
 import Link from "next/link";
 
-interface Props {
-  error: Error;
-  reset: () => void;
-}
-
-const Page: NextPage<Props> = () => {
+function NotFoundPage() {
   return (
     <Card asChild>
       <main className="flex justify-center items-center min-h-screen rounded-none before:!inset-5 before:drop-shadow-lg before:animate-fadeAndMoveIn ">
@@ -27,5 +21,5 @@ const Page: NextPage<Props> = () => {
       </main>
     </Card>
   );
-};
-export default Page;
+}
+export default NotFoundPage;
