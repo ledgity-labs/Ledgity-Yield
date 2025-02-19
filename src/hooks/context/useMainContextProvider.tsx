@@ -1,10 +1,9 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { useLocalStorage } from "../utils/useLocalStorage";
 
 type MainContext = {
-  referralCode: string | null;
-  changeReferalCode: (slug: string | null) => void;
-  currentTab: string;
-  switchTab: (slug: string) => void;
+  referralCode: string;
 };
 
 const MainContext = createContext({} as MainContext);
@@ -12,26 +11,25 @@ const MainContext = createContext({} as MainContext);
 export const MainContextProvider: React.FC<{
   children: React.ReactElement;
 }> = ({ children }) => {
-  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const searchParams = useSearchParams();
 
-  function changeReferalCode(slug: string | null) {
-    setReferralCode(slug);
-  }
+  const [referralCode, setReferralCode] = useLocalStorage("referralCode", "");
 
-  const [currentTab, setCurrentTab] = useState("invest");
+  useEffect(() => {
+    if (referralCode) return;
 
-  const switchTab = (slug: string) => {
-    history.pushState({}, slug, `/app/${slug}`);
-    setCurrentTab(slug);
-  };
+    if (searchParams.has("referral")) {
+      const referralCode = searchParams.get("referral");
+      if (!referralCode) return;
+
+      setReferralCode(referralCode);
+    }
+  }, [searchParams]);
 
   return (
     <MainContext.Provider
       value={{
         referralCode,
-        changeReferalCode,
-        currentTab,
-        switchTab,
       }}
     >
       {children}

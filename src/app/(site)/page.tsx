@@ -1,22 +1,12 @@
 "use client";
-import { type NextPage } from "next";
-import HomeHero from "@/components/site/home/HomeHero";
-import HomePartners from "@/components/site/home/HomePartners";
-import HomeHowItWorks from "@/components/site/home/HomeHowItWorks";
-import HomeFeatures from "@/components/site/home/HomeFeatures";
+
 import Footer from "@/components/Footer";
-import { useMainContext } from "@/hooks/context/useMainContextProvider";
-import { useSearchParams } from "next/navigation";
+import HomeFeatures from "@/components/site/home/HomeFeatures";
+import HomeHero from "@/components/site/home/HomeHero";
+import HomeHowItWorks from "@/components/site/home/HomeHowItWorks";
+import HomePartners from "@/components/site/home/HomePartners";
 
-//
-const Page: NextPage = () => {
-  const searchParams = useSearchParams();
-  const { changeReferalCode } = useMainContext();
-  if (searchParams.has("referral")) {
-    const referralCode = searchParams.get("referral");
-    changeReferalCode(referralCode);
-  }
-
+function Page() {
   return (
     <>
       <HomeHero />
@@ -28,5 +18,6 @@ const Page: NextPage = () => {
       </div>
     </>
   );
-};
+}
+
 export default Page;

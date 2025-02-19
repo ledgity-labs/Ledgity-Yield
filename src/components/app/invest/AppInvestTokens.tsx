@@ -23,7 +23,6 @@ import { useEffect, useRef, useState } from "react";
 import { useLTokenInfos } from "@/hooks/contracts/useLTokenInfos";
 import { useLTokenMultichainTvl } from "@/hooks/contracts/useLTokenMultichainTvl";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
-import { useMainContext } from "@/hooks/context/useMainContextProvider";
 import { useAccount } from "wagmi";
 
 type Pool = {
@@ -47,7 +46,6 @@ type Pool = {
  *    with most up to date data.
  */
 export function AppInvestTokens({ className }: { className?: string }) {
-  const { switchTab } = useMainContext();
   const account = useAccount();
   const [sorting, setSorting] = useState<SortingState>([]);
   const columnHelper = createColumnHelper<Pool>();
@@ -284,8 +282,7 @@ export function AppInvestTokens({ className }: { className?: string }) {
           </div>
         );
       })}
-      {/* <a
-        onClick={() => switchTab("pre-mining")}
+      {/* <a 
         className="cursor-pointer py-6 flex md:col-span-5 col-span-4 w-full items-center justify-between sm:px-10 px-5 bg-gradient-to-bl from-primary/40 to-bg  hover:opacity-80 transition-opacity border-b border-b-fg/10"
       >
         <div className="inline-flex items-center gap-2.5 relative -left-[8.5px]">
