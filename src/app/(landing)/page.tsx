@@ -1,10 +1,10 @@
 "use client";
 
 import Footer from "@/components/Footer";
-import HomeFeatures from "@/components/site/home/HomeFeatures";
-import HomeHero from "@/components/site/home/HomeHero";
-import HomeHowItWorks from "@/components/site/home/HomeHowItWorks";
-import HomePartners from "@/components/site/home/HomePartners";
+import HomeFeatures from "@/components/landing/HomeFeatures";
+import HomeHero from "@/components/landing/HomeHero";
+import HomeHowItWorks from "@/components/landing/HomeHowItWorks";
+import HomePartners from "@/components/landing/HomePartners";
 
 function Page() {
   return (

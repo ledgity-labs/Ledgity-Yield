@@ -25,15 +25,6 @@ import {
 import { ERC20TokenType, TokenInfo } from "../../types";
 import { Address } from "viem";
 
-type StoredTransaction = {
-  type: "transactionSucceed" | "transactionFailed";
-  transactionHash: string;
-  chainId: number;
-  explorerLink: string | undefined;
-  transactionName: string;
-  timestamp: number;
-};
-
 export type Web3ContextData = {
   // Wallet
   loading: boolean;
@@ -61,11 +52,13 @@ export type Web3ContextData = {
   addERC20Token: (token: ERC20TokenType) => Promise<boolean>;
 };
 
-export const Web3Context = createContext({} as Web3ContextData);
+const Web3Context = createContext({} as Web3ContextData);
 
-export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({
+export function Web3ContextProvider({
   children,
-}) => {
+}: {
+  children: ReactElement;
+}): ReactElement {
   // Wagmi hooks
   const { address, isConnected, chain } = useAccount();
   const { switchChainAsync } = useSwitchChain();
@@ -310,6 +303,6 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({
       {children}
     </Web3Context.Provider>
   );
-};
+}
 
 export const useWeb3Context = () => useContext(Web3Context);

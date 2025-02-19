@@ -1,14 +1,14 @@
 "use client";
 
 import "@rainbow-me/rainbowkit/styles.css";
+import { ReactElement } from "react";
 import {
-  type DisclaimerComponent, 
+  type DisclaimerComponent,
   type Theme,
   lightTheme,
-  RainbowKitProvider as _RainbowKitProvider,
+  RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
-import { FC } from "react";
 import { Blockie } from "@/components/icons/Blockie";
 
 // Built RainbowKit theme
@@ -36,13 +36,13 @@ const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
   </Text>
 );
 
-interface Props {
-  children?: React.ReactNode;
-}
-
-const RainbowKitProvider: FC<Props> = ({ children }) => {
+export function RainbowKitContextProvider({
+  children,
+}: {
+  children: ReactElement;
+}): ReactElement {
   return (
-    <_RainbowKitProvider
+    <RainbowKitProvider
       appInfo={{
         disclaimer: Disclaimer,
       }}
@@ -51,8 +51,6 @@ const RainbowKitProvider: FC<Props> = ({ children }) => {
       showRecentTransactions={true}
     >
       {children}
-    </_RainbowKitProvider>
+    </RainbowKitProvider>
   );
-};
-
-export default RainbowKitProvider;
+}
