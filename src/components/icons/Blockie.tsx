@@ -41,6 +41,8 @@ export function Blockie({
       ) : (
         <Image
           src={makeBlockie(!address ? "default" : address)}
+          width={size}
+          height={size}
           alt="account-blockie"
         />
       )}

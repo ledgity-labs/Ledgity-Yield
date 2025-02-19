@@ -70,7 +70,7 @@ const HomeHero: FC<Props> = ({ className }) => {
                 prefix="±"
                 className="font-heading text-7xl font-extrabold text-slate-50/[60%] lg:text-7xl"
               >
-                7%
+                9%
               </span>
               <h3 className="font-heading text-xl font-bold text-primary opacity-70">
                 APR
