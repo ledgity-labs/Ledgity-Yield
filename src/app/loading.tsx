@@ -15,3 +15,5 @@ export function LoadingPage() {
     </main>
   );
 }
+
+export default LoadingPage;
