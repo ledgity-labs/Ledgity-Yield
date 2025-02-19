@@ -1,38 +1,53 @@
-import { Metadata } from "next";
-import { AppTabs } from "./AppTabs";
+import { Metadata, NextPage } from "next";
+import { AppTabs, TabParam } from "./AppTabs";
 
-export function generateStaticParams() {
-  const tabs = ["dashboard", "invest", "airdrop", "get-usdc", "pre-mining"];
-
-  return tabs.map((tab) => ({
-    tab: tab,
-  }));
-}
-
-type Props = {
-  params: { tab: string };
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const title = {
-    "dashboard": "Dashboard",
-    "invest": "Invest",
-    "airdrop": "Multi-Airdrop",
-    "get-usdc": "Get USDC",
-    // "pre-mining": "Pre-Mining",
-    "staking": "Staking",
-    "affiliate": "Affiliate Program",
-  }[params.tab];
-
-  const description = {
-    "airdrop":
-      "16% of 1-year $LDY supply and tokens from 5+ projects are airdropepd to our early community members. Complete tasks and check your eligibility.",
-    "pre-mining":
+const tabParams: TabParam[] = [
+  {
+    tab: "invest",
+    title: "Invest",
+  },
+  {
+    tab: "staking",
+    title: "Staking",
+  },
+  {
+    tab: "dashboard",
+    title: "Dashboard",
+  },
+  {
+    tab: "affiliate",
+    title: "Affiliate Program",
+  },
+  {
+    tab: "swap",
+    title: "Swap",
+  },
+  {
+    tab: "bridge",
+    title: "Bridge",
+  },
+  {
+    tab: "pre-mining",
+    title: "Pre-Mining",
+    description:
       "Contribute in bootstraping initial protocol liquidity and receive very first $LDY tokens.",
-  }[params.tab];
-
-  const keywords = {
-    airdrop: [
+    keywords: [
+      "Ledgity Yield Pre-Mining",
+      "Ledgity Pre-Mining",
+      "RWA",
+      "Stablecoins",
+      "Yield",
+      "Liquid staking",
+      "Real World Assets",
+    ],
+    isHidden: true,
+  },
+  {
+    tab: "airdrop",
+    title: "Multi-Airdrop",
+    description:
+      "16% of 1-year $LDY supply and tokens from 5+ projects are airdropepd to our early community members. Complete tasks and check your eligibility.",
+    keywords: [
       "Airdrop",
       "Ledgity Airdrop",
       "Ledgity Multi-Airdrop",
@@ -44,27 +59,41 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       "Liquid staking",
       "Real World Assets",
     ],
-    // "pre-mining": [
-    //   "Ledgity Yield Pre-Mining",
-    //   "Ledgity Pre-Mining",
-    //   "RWA",
-    //   "Stablecoins",
-    //   "Yield",
-    //   "Liquid staking",
-    //   "Real World Assets",
-    // ],
-  }[params.tab];
+    isHidden: true,
+  },
+
+  {
+    tab: "get-usdc",
+    title: "Get USDC",
+    isHidden: true,
+  },
+];
+
+export function generateStaticParams() {
+  // Only generate active tabs
+  return tabParams.filter((tab) => !tab.isHidden).map(({ tab }) => ({ tab }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { tab: string };
+}): Promise<Metadata> {
+  // Find the tab configuration
+  const tabConfig = tabParams.find((t) => t.tab === params.tab) || {
+    tab: params.tab,
+    title: params.tab.charAt(0).toUpperCase() + params.tab.slice(1),
+  };
 
   return {
-    title: `Ledgity Yield • ${title}`,
-    description: description,
-    keywords: keywords,
+    title: `Ledgity Yield • ${tabConfig.title}`,
+    description: tabConfig.description || undefined,
+    keywords: tabConfig.keywords || undefined,
   };
 }
 
-//@ts-ignore
-const Page: NextPage = ({ params }: { params: { tab: string } }) => {
-  return <AppTabs />;
-};
+function Page() {
+  return <AppTabs tabParams={tabParams} />;
+}
 
 export default Page;
