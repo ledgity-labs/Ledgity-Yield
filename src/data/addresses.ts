@@ -1,5 +1,5 @@
 import { ChainId } from "./chainId";
-import { zeroAddress } from "viem";
+import { zeroAddress, Address } from "viem";
 import {
   globalBlacklistAddress,
   globalOwnerAddress,
@@ -9,6 +9,9 @@ import {
   lTokenSignalerAddress,
 } from "@/types";
 import { dependencies } from "../../contracts/dependencies";
+
+// @dev Reexport to have all addresses in one place
+export { dependencies as dependenciesAddresses };
 
 type ContractName =
   | "GlobalBlacklist"
@@ -24,10 +27,10 @@ type ContractName =
   | "LUSDC";
 
 // @dev New LTokens should be specified here to feed the wagmi hooks
-const tokenAddresses: {
+export const lTokenAddresses: {
   [chainId: number]: {
-    LEURC?: string;
-    LUSDC?: string;
+    LEURC?: Address;
+    LUSDC?: Address;
   };
 } = {
   [ChainId.mainnet]: {},
@@ -49,7 +52,16 @@ function fetchChainAddresses(
     | ChainId.arbitrum_one
     | ChainId.base
     | ChainId.linea,
-) {
+): {
+  [key in ContractName]: Address;
+} {
+  // Check that LTokens always have their underlying token address specified
+  if (
+    (lTokenAddresses[chainId]?.LEURC && !dependencies[chainId]?.EURC) ||
+    (lTokenAddresses[chainId]?.LUSDC && !dependencies[chainId]?.USDC)
+  )
+    throw Error("LToken address specified without dependency address");
+
   // @dev The as const of the addresses is annoying for generic functions
   return {
     GlobalBlacklist: globalBlacklistAddress[chainId] || zeroAddress,
@@ -59,8 +71,8 @@ function fetchChainAddresses(
     LTokenSignaler: (lTokenSignalerAddress as any)[chainId] || zeroAddress,
     // Tokens
     LDY: (ldyAddress as any)[chainId] || zeroAddress,
-    LEURC: tokenAddresses[chainId]?.LEURC || zeroAddress,
-    LUSDC: tokenAddresses[chainId]?.LUSDC || zeroAddress,
+    LEURC: lTokenAddresses[chainId]?.LEURC || zeroAddress,
+    LUSDC: lTokenAddresses[chainId]?.LUSDC || zeroAddress,
     EURC: dependencies[chainId]?.EURC || zeroAddress,
     USDC: dependencies[chainId]?.USDC || zeroAddress,
   };
@@ -68,7 +80,7 @@ function fetchChainAddresses(
 
 const addressesProd: {
   [chainId: string]: {
-    [key in ContractName]: string;
+    [key in ContractName]: Address;
   };
 } = {
   mainnet: fetchChainAddresses(ChainId.mainnet),

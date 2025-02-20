@@ -7,16 +7,18 @@ export function Blockie({
   size = 28,
   className,
 }: {
-  address: string;
+  address: `0x${string}` | undefined;
   size?: number;
   className?: string;
 }) {
   const { data: ensName } = useEnsName({
-    address: address as `0x${string}`,
+    address,
     chainId: 1,
   });
+
+  // @dev Mad about null value so fallback to undefined
   const { data: ensAvatar } = useEnsAvatar({
-    name: ensName as string | undefined,
+    name: ensName ?? undefined,
     chainId: 1,
   });
 

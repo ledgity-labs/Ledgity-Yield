@@ -14,12 +14,12 @@ import { useState, useEffect } from "react";
 import { NetworkIcon } from "../icons/NetworkIcon";
 import { Blockie } from "../icons/Blockie";
 // Context
-import { useWeb3Context } from "../../hooks/context/useWeb3ContextProvider";
+import { useWeb3Context } from "@/hooks/context/Web3ContextProvider";
 // Data
 import {
   getNetworkConfig,
   getNetworkConfigs,
-} from "../../functions/marketsAndNetworksConfig";
+} from "@/functions/marketsAndNetworksConfig";
 
 export function ConnectButton() {
   const [isMounted, setIsMounted] = useState(false);

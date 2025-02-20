@@ -1,8 +1,10 @@
+import { Address } from "viem";
+
 export const dependencies: {
   [chainId: string]: {
-    LDY?: string;
-    USDC?: string;
-    EURC?: string;
+    LDY?: Address;
+    USDC?: Address;
+    EURC?: Address;
   };
 } = {
   "1": {

@@ -20,10 +20,11 @@ import { formatUnits } from "viem";
 import { useTokenPricesUsd } from "../../../hooks/api/useTokenPricesUsd";
 import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
 import { useEffect, useRef, useState } from "react";
-import { useLTokenInfos } from "@/hooks/contracts/useLTokenInfos";
+import { useLTokenInfos } from "@/hooks/contracts/read/useLTokenInfos";
 import { useLTokenMultichainTvl } from "@/hooks/contracts/useLTokenMultichainTvl";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { useAccount } from "wagmi";
+import { useWeb3Context } from "@/hooks/context/Web3ContextProvider";
 
 type Pool = {
   underlyingSymbol: string;
@@ -46,7 +47,8 @@ type Pool = {
  *    with most up to date data.
  */
 export function AppInvestTokens({ className }: { className?: string }) {
-  const account = useAccount();
+  const { appChainId, currentAccount } = useWeb3Context();
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const columnHelper = createColumnHelper<Pool>();
   const lTokens = useAvailableLTokens();
@@ -58,7 +60,7 @@ export function AppInvestTokens({ className }: { className?: string }) {
 
   const tokenInfos = useLTokenInfos(
     lTokens.map((symbol) => getContractAddress(symbol, currentChain?.id || 0)),
-    account.address,
+    currentAccount,
   );
 
   const underlyingPrices = useTokenPricesUsd(
@@ -95,7 +97,7 @@ export function AppInvestTokens({ className }: { className?: string }) {
       setTableData(newTableData);
       setIsLoading(false);
     }
-  }, [account.address, currentChain, tokenInfos, tvlData, underlyingPrices]);
+  }, [currentAccount, appChainId, tokenInfos, tvlData, underlyingPrices]);
 
   const columns = [
     columnHelper.accessor("underlyingSymbol", {
