@@ -17,7 +17,7 @@ for (let chainId in deployments) {
 }
 
 export default defineConfig({
-  out: "src/generated.ts",
+  out: "src/types/contractTypes.ts",
   plugins: [
     hardhat({
       project: "./contracts/hardhat/",

@@ -1441,17 +1441,6 @@ export const ldyStakingAbi = [
   },
   {
     type: 'function',
-    inputs: [
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'token', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'emergencyWithdraw',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
     inputs: [],
     name: 'finishAt',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
@@ -6587,28 +6576,6 @@ export const useWriteLdyStaking = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ldyStakingAbi}__ and `functionName` set to `"emergencyWithdraw"`
- *
- * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x2AeDFB927Aa2aE87c220b9071c0A1209786b5C5e)
- * - [__View Contract on X1 Testnet Ok Link__](https://www.oklink.com/xlayer-test/address/0xd132b6D2cfACa8B5b9e0bA8004Df6275380fa895)
- * - [__View Contract on X Layer Mainnet Ok Link__](https://www.oklink.com/xlayer/address/0xd132b6D2cfACa8B5b9e0bA8004Df6275380fa895)
- * - [__View Contract on Base Basescan__](https://basescan.org/address/0x891611398B53BBAaA3db04c158218c319c87d554)
- * -
- * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0x98002b5c06b44c8769dA3DAe97CA498aB6F97137)
- * - [__View Contract on Linea Goerli Testnet Etherscan__](https://goerli.lineascan.build/address/0x7A78A93dad6A64d0A92C913C008dC79dBf919Fa6)
- * - [__View Contract on Linea Mainnet Etherscan__](https://lineascan.build/address/0x627Ff3485a2e34916a6E1c0D0b350A422F5d89D1)
- * - [__View Contract on Base Sepolia Basescan__](https://sepolia.basescan.org/address/0xB5C69197e5D6A52c776384479B529D2d76f9e2De)
- * - [__View Contract on Arbitrum Goerli Arbiscan__](https://goerli.arbiscan.io/address/0x5BFFC5303719f0dC6050a2D8042936714109985f)
- * - [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6f5B9DB5b87a9Ecf1a9E23e812799988A4b5B79e)
- */
-export const useWriteLdyStakingEmergencyWithdraw =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: ldyStakingAbi,
-    address: ldyStakingAddress,
-    functionName: 'emergencyWithdraw',
-  })
-
-/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ldyStakingAbi}__ and `functionName` set to `"getReward"`
  *
  * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x2AeDFB927Aa2aE87c220b9071c0A1209786b5C5e)
@@ -6883,28 +6850,6 @@ export const useSimulateLdyStaking = /*#__PURE__*/ createUseSimulateContract({
   abi: ldyStakingAbi,
   address: ldyStakingAddress,
 })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ldyStakingAbi}__ and `functionName` set to `"emergencyWithdraw"`
- *
- * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x2AeDFB927Aa2aE87c220b9071c0A1209786b5C5e)
- * - [__View Contract on X1 Testnet Ok Link__](https://www.oklink.com/xlayer-test/address/0xd132b6D2cfACa8B5b9e0bA8004Df6275380fa895)
- * - [__View Contract on X Layer Mainnet Ok Link__](https://www.oklink.com/xlayer/address/0xd132b6D2cfACa8B5b9e0bA8004Df6275380fa895)
- * - [__View Contract on Base Basescan__](https://basescan.org/address/0x891611398B53BBAaA3db04c158218c319c87d554)
- * -
- * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0x98002b5c06b44c8769dA3DAe97CA498aB6F97137)
- * - [__View Contract on Linea Goerli Testnet Etherscan__](https://goerli.lineascan.build/address/0x7A78A93dad6A64d0A92C913C008dC79dBf919Fa6)
- * - [__View Contract on Linea Mainnet Etherscan__](https://lineascan.build/address/0x627Ff3485a2e34916a6E1c0D0b350A422F5d89D1)
- * - [__View Contract on Base Sepolia Basescan__](https://sepolia.basescan.org/address/0xB5C69197e5D6A52c776384479B529D2d76f9e2De)
- * - [__View Contract on Arbitrum Goerli Arbiscan__](https://goerli.arbiscan.io/address/0x5BFFC5303719f0dC6050a2D8042936714109985f)
- * - [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6f5B9DB5b87a9Ecf1a9E23e812799988A4b5B79e)
- */
-export const useSimulateLdyStakingEmergencyWithdraw =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: ldyStakingAbi,
-    address: ldyStakingAddress,
-    functionName: 'emergencyWithdraw',
-  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ldyStakingAbi}__ and `functionName` set to `"getReward"`
@@ -12866,28 +12811,6 @@ export const writeLdyStaking = /*#__PURE__*/ createWriteContract({
 })
 
 /**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link ldyStakingAbi}__ and `functionName` set to `"emergencyWithdraw"`
- *
- * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x2AeDFB927Aa2aE87c220b9071c0A1209786b5C5e)
- * - [__View Contract on X1 Testnet Ok Link__](https://www.oklink.com/xlayer-test/address/0xd132b6D2cfACa8B5b9e0bA8004Df6275380fa895)
- * - [__View Contract on X Layer Mainnet Ok Link__](https://www.oklink.com/xlayer/address/0xd132b6D2cfACa8B5b9e0bA8004Df6275380fa895)
- * - [__View Contract on Base Basescan__](https://basescan.org/address/0x891611398B53BBAaA3db04c158218c319c87d554)
- * -
- * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0x98002b5c06b44c8769dA3DAe97CA498aB6F97137)
- * - [__View Contract on Linea Goerli Testnet Etherscan__](https://goerli.lineascan.build/address/0x7A78A93dad6A64d0A92C913C008dC79dBf919Fa6)
- * - [__View Contract on Linea Mainnet Etherscan__](https://lineascan.build/address/0x627Ff3485a2e34916a6E1c0D0b350A422F5d89D1)
- * - [__View Contract on Base Sepolia Basescan__](https://sepolia.basescan.org/address/0xB5C69197e5D6A52c776384479B529D2d76f9e2De)
- * - [__View Contract on Arbitrum Goerli Arbiscan__](https://goerli.arbiscan.io/address/0x5BFFC5303719f0dC6050a2D8042936714109985f)
- * - [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6f5B9DB5b87a9Ecf1a9E23e812799988A4b5B79e)
- */
-export const writeLdyStakingEmergencyWithdraw =
-  /*#__PURE__*/ createWriteContract({
-    abi: ldyStakingAbi,
-    address: ldyStakingAddress,
-    functionName: 'emergencyWithdraw',
-  })
-
-/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link ldyStakingAbi}__ and `functionName` set to `"getReward"`
  *
  * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x2AeDFB927Aa2aE87c220b9071c0A1209786b5C5e)
@@ -13164,28 +13087,6 @@ export const simulateLdyStaking = /*#__PURE__*/ createSimulateContract({
   abi: ldyStakingAbi,
   address: ldyStakingAddress,
 })
-
-/**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link ldyStakingAbi}__ and `functionName` set to `"emergencyWithdraw"`
- *
- * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x2AeDFB927Aa2aE87c220b9071c0A1209786b5C5e)
- * - [__View Contract on X1 Testnet Ok Link__](https://www.oklink.com/xlayer-test/address/0xd132b6D2cfACa8B5b9e0bA8004Df6275380fa895)
- * - [__View Contract on X Layer Mainnet Ok Link__](https://www.oklink.com/xlayer/address/0xd132b6D2cfACa8B5b9e0bA8004Df6275380fa895)
- * - [__View Contract on Base Basescan__](https://basescan.org/address/0x891611398B53BBAaA3db04c158218c319c87d554)
- * -
- * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0x98002b5c06b44c8769dA3DAe97CA498aB6F97137)
- * - [__View Contract on Linea Goerli Testnet Etherscan__](https://goerli.lineascan.build/address/0x7A78A93dad6A64d0A92C913C008dC79dBf919Fa6)
- * - [__View Contract on Linea Mainnet Etherscan__](https://lineascan.build/address/0x627Ff3485a2e34916a6E1c0D0b350A422F5d89D1)
- * - [__View Contract on Base Sepolia Basescan__](https://sepolia.basescan.org/address/0xB5C69197e5D6A52c776384479B529D2d76f9e2De)
- * - [__View Contract on Arbitrum Goerli Arbiscan__](https://goerli.arbiscan.io/address/0x5BFFC5303719f0dC6050a2D8042936714109985f)
- * - [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6f5B9DB5b87a9Ecf1a9E23e812799988A4b5B79e)
- */
-export const simulateLdyStakingEmergencyWithdraw =
-  /*#__PURE__*/ createSimulateContract({
-    abi: ldyStakingAbi,
-    address: ldyStakingAddress,
-    functionName: 'emergencyWithdraw',
-  })
 
 /**
  * Wraps __{@link simulateContract}__ with `abi` set to __{@link ldyStakingAbi}__ and `functionName` set to `"getReward"`
