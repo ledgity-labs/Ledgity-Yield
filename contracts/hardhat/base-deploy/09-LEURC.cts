@@ -1,5 +1,5 @@
 import { type DeployFunction } from "hardhat-deploy/dist/types";
-import dependencies from "../../dependencies.json";
+import { dependencies } from "../../dependencies.ts";
 
 const LTOKEN_SYMBOL = "LEURC";
 const UNDERLYING_TOKEN_SYMBOL = "EURC";
@@ -21,19 +21,19 @@ module.exports = (async ({ getNamedAccounts, deployments, getChainId }) => {
 
   // Else use network implementation of the underlying token
   const missingAddressError = new Error(
-    `${UNDERLYING_TOKEN_SYMBOL} address not available, ensure it is set in dependencies.json`,
+    `${UNDERLYING_TOKEN_SYMBOL} address not available, ensure it is set in dependencies`,
   );
-  // Check if the underlying token is set in dependencies.json
+  // Check if the underlying token is set in dependencies
   if (!Object.keys(dependencies).includes(UNDERLYING_TOKEN_SYMBOL))
     throw missingAddressError;
 
-  // Check address of underlying token is available for the current chain in dependencies.json
+  // Check address of underlying token is available for the current chain in dependencies
   // @bw these are bad
   // @ts-ignore
   if (!Object.keys(dependencies[UNDERLYING_TOKEN_SYMBOL]).includes(chainId))
     throw missingAddressError;
 
-  // Retrieve underlying token address from dependencies.json
+  // Retrieve underlying token address from dependencies
   // @ts-ignore
   const underlyingAddress = dependencies[UNDERLYING_TOKEN_SYMBOL][chainId];
 
