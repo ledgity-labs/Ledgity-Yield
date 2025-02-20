@@ -1,10 +1,10 @@
 "use client";
 
-import { wagmiConfig } from "../config/wagmi";
+import { wagmiConfig } from "./config/wagmi";
 // Context
 import { RainbowKitContextProvider } from "@/hooks/context/RainbowKitContextProvider";
-import { MainContextProvider } from "@/hooks/context/useMainContextProvider";
-import { Web3ContextProvider } from "@/hooks/context/useWeb3ContextProvider";
+import { AppDataContextProvider } from "@/hooks/context/AppDataContextProvider";
+import { Web3ContextProvider } from "@/hooks/context/Web3ContextProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 // Types
@@ -15,15 +15,15 @@ function App({ children }: { children: ReactElement }) {
   const queryClient = new QueryClient();
 
   return (
-    <MainContextProvider>
-      <WagmiProvider config={wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-          <Web3ContextProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <Web3ContextProvider>
+          <AppDataContextProvider>
             <RainbowKitContextProvider>{children}</RainbowKitContextProvider>
-          </Web3ContextProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
-    </MainContextProvider>
+          </AppDataContextProvider>
+        </Web3ContextProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
 

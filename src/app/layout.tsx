@@ -72,7 +72,7 @@ interface Props {
 
 const RootLayout: NextPage<Props> = ({ children }) => {
   // Loaded dynamically for faster initial load
-  const App = dynamic(() => import("@/components/App"), {
+  const App = dynamic(() => import("@/App"), {
     loading: LoadingPage,
     ssr: false,
   });

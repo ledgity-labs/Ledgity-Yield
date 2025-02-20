@@ -1,16 +1,24 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  ReactElement,
+  useContext,
+  useEffect,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocalStorage } from "../utils/useLocalStorage";
 
-type MainContext = {
+type AppDataContext = {
   referralCode: string;
 };
 
-const MainContext = createContext({} as MainContext);
+const AppDataContext = createContext({} as AppDataContext);
 
-export const MainContextProvider: React.FC<{
-  children: React.ReactElement;
-}> = ({ children }) => {
+export function AppDataContextProvider({
+  children,
+}: {
+  children: ReactElement;
+}): ReactElement {
   const searchParams = useSearchParams();
 
   const [referralCode, setReferralCode] = useLocalStorage("referralCode", "");
@@ -27,14 +35,14 @@ export const MainContextProvider: React.FC<{
   }, [searchParams]);
 
   return (
-    <MainContext.Provider
+    <AppDataContext.Provider
       value={{
         referralCode,
       }}
     >
       {children}
-    </MainContext.Provider>
+    </AppDataContext.Provider>
   );
-};
+}
 
-export const useMainContext = () => useContext(MainContext);
+export const useAppDataContext = () => useContext(AppDataContext);
