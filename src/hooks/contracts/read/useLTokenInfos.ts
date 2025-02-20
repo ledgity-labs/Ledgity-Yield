@@ -1,14 +1,35 @@
-import { lTokenAbi } from "@/types";
+// Hooks
 import { useReadContracts } from "wagmi";
-import { LTokenInfo } from "../../types";
-import { zeroAddress } from "viem";
 import { useEffect, useState } from "react";
+import { useLocalStorage } from "@/hooks/utils/useLocalStorage";
+import { useWeb3Context } from "@/hooks/context/Web3ContextProvider";
+// Datas
+import { zeroAddress } from "viem";
+// Types
+import { lTokenAbi, LTokenInfo } from "@/types";
+
+const NB_DATA_POINTS = 6;
 
 export function useLTokenInfos(
   tokenAddresses: (`0x${string}` | undefined)[],
   userAddress?: `0x${string}`,
 ): LTokenInfo[] {
+  const { appChainId } = useWeb3Context();
   const [currentValue, setCurrentValue] = useState<LTokenInfo[]>([]);
+
+  const { localData, setLocalData } = useLocalStorage<LTokenInfo[]>(
+    "ltokenInfo",
+    [],
+  );
+
+  useEffect(() => {
+    if (!currentValue.length && localData.length) setCurrentValue(localData);
+  }, [currentValue]);
+
+  useEffect(() => {
+    setLocalData([]);
+    setCurrentValue([]);
+  }, [appChainId]);
 
   const tokensFiltered = [...new Set(tokenAddresses)].filter(
     (address) =>
@@ -67,16 +88,18 @@ export function useLTokenInfos(
 
     const formattedData: LTokenInfo[] = [];
 
-    for (let i = 0; i < rawData.data.length; i += 6) {
-      const addressIndex = Math.floor(i / 6);
+    for (let i = 0; i < rawData.data.length; i += NB_DATA_POINTS) {
+      const addressIndex = Math.floor(i / NB_DATA_POINTS);
       const address = tokenAddresses?.[addressIndex] ?? zeroAddress;
 
       if (
         !address ||
         rawData.data
-          .slice(i, i + 6)
+          .slice(i, i + NB_DATA_POINTS)
           .some((data) => data.result === undefined) ||
-        rawData.data.slice(i, i + 6).some((data) => data.error !== undefined)
+        rawData.data
+          .slice(i, i + NB_DATA_POINTS)
+          .some((data) => data.error !== undefined)
       ) {
         continue;
       }
@@ -94,8 +117,9 @@ export function useLTokenInfos(
 
     if (JSON.stringify(formattedData) !== JSON.stringify(currentValue)) {
       setCurrentValue(formattedData);
+      setLocalData(formattedData);
     }
-  }, [rawData, tokenAddresses, userAddress, currentValue]);
+  }, [rawData, userAddress, currentValue]);
 
   return currentValue;
 }
