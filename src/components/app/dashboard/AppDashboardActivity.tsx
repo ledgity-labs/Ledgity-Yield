@@ -38,7 +38,7 @@ import {
   useReadLTokenDecimals,
   useReadLTokenWithdrawalQueue,
   useSimulateLTokenCancelWithdrawalRequest,
-} from "@/generated";
+} from "@/types";
 import {
   UseSimulateContractReturnType,
   useAccount,

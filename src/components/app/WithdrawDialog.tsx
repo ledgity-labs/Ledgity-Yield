@@ -17,7 +17,7 @@ import {
   useReadLTokenDecimals,
   useSimulateLTokenInstantWithdrawal,
   useSimulateLTokenRequestWithdrawal,
-} from "@/generated";
+} from "@/types";
 import { formatUnits, parseEther, parseUnits, zeroAddress } from "viem";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { TxButton } from "../ui/TxButton";
@@ -77,6 +77,7 @@ export const WithdrawDialog: FC<Props> = ({
   // Fetch restriction status
   const { isRestricted, isLoading: isRestrictionLoading } = useRestricted();
 
+  // @bw bad fallback from instant withdrawal
   const memoizedRequestWithdrawalPreparation = useMemo(() => {
     return requestWithdrawalPreparation as unknown as UseSimulateContractReturnType;
   }, [

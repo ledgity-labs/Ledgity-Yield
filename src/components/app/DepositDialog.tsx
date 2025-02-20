@@ -17,7 +17,7 @@ import {
   useReadLTokenDecimals,
   useReadLTokenUnderlying,
   useSimulateLTokenDeposit,
-} from "@/generated";
+} from "@/types";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { erc20Abi, parseUnits, zeroAddress } from "viem";
 import {

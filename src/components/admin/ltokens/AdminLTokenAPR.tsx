@@ -1,6 +1,6 @@
 import { Card, Rate, TxButton } from "@/components/ui";
 import { RateInput } from "@/components/ui/RateInput";
-import { useReadLTokenGetApr, useSimulateLTokenSetApr } from "@/generated";
+import { useReadLTokenGetApr, useSimulateLTokenSetApr } from "@/types";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import { parseUnits } from "viem";

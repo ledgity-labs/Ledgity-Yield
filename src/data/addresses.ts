@@ -7,7 +7,7 @@ import {
   ldyAddress,
   ldyStakingAddress,
   lTokenSignalerAddress,
-} from "@/generated";
+} from "@/types";
 import { dependencies } from "../../contracts/dependencies";
 
 type ContractName =

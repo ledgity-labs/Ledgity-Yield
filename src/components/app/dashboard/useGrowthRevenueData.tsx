@@ -1,4 +1,4 @@
-import { readLToken } from "@/generated";
+import { readLToken } from "@/types";
 import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { wagmiConfig } from "../../../config/wagmi";

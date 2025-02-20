@@ -1,5 +1,5 @@
 import { Card, TxButton } from "@/components/ui";
-import { useSimulateLTokenProcessQueuedRequests } from "@/generated";
+import { useSimulateLTokenProcessQueuedRequests } from "@/types";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { FC, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";

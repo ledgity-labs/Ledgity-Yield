@@ -3,7 +3,7 @@ import {
   useReadLTokenDecimals,
   useReadLTokenUnclaimedFees,
   useSimulateLTokenClaimFees,
-} from "@/generated";
+} from "@/types";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { FC, useEffect, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";

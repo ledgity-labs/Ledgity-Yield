@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { useContractAddress } from "@/hooks/useContractAddress";
-import { useReadLTokenBalanceOf } from "@/generated";
+import { useReadLTokenBalanceOf } from "@/types";
 import { WithdrawDialog } from "../WithdrawDialog";
 import { DepositDialog } from "../DepositDialog";
 import {

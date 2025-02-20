@@ -18,7 +18,7 @@ import {
   useReadLTokenBalanceOf,
   useReadLTokenDecimals,
   useReadLTokenUnderlying,
-} from "@/generated";
+} from "@/types";
 import { useAccount, useBlockNumber } from "wagmi";
 import { zeroAddress } from "viem";
 import { useQueryClient } from "@tanstack/react-query";

@@ -6,7 +6,7 @@ import { formatUnits } from "viem";
 import {
   useSimulateLdyStakingGetReward,
   useSimulateLdyStakingUnstake,
-} from "@/generated";
+} from "@/types";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";

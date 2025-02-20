@@ -34,7 +34,7 @@ import {
   useWriteLTokenProcessBigQueuedRequest,
   writeGenericErc20Approve,
   writeLTokenProcessBigQueuedRequest,
-} from "@/generated";
+} from "@/types";
 import clsx from "clsx";
 import { UseSimulateContractReturnType, useAccount } from "wagmi";
 import { wagmiConfig } from "../../../config/wagmi";

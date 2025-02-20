@@ -10,7 +10,7 @@ import {
   useReadLTokenDecimals,
   useReadLTokenUnderlying,
   useSimulateLTokenRepatriate,
-} from "@/generated";
+} from "@/types";
 import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
 import { useContractAddress } from "@/hooks/useContractAddress";

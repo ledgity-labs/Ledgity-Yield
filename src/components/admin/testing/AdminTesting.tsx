@@ -28,7 +28,7 @@ import { AdminMasonry } from "../AdminMasonry";
 import { AdminBrick } from "../AdminBrick";
 import { hardhat } from "wagmi/chains";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSimulateGenericErc20Mint } from "@/generated";
+import { useSimulateGenericErc20Mint } from "@/types";
 
 const MintFakeToken: FC<{ contractName: string }> = ({
   contractName,

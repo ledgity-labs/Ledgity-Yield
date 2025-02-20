@@ -3,7 +3,7 @@ import {
   useReadLTokenUnderlying,
   useReadLTokenWithdrawalQueue,
   useSimulateLTokenProcessBigQueuedRequest,
-} from "@/generated";
+} from "@/types";
 import { ChangeEvent, FC, useState, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
 import { useContractAddress } from "@/hooks/useContractAddress";

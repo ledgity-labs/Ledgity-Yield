@@ -1,5 +1,5 @@
 import { Card, TxButton } from "@/components/ui";
-import { useSimulateLTokenSignalerSignalLToken } from "@/generated";
+import { useSimulateLTokenSignalerSignalLToken } from "@/types";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { FC, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";

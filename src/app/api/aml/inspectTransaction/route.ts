@@ -5,7 +5,7 @@ import {
   isAccountSanctioned,
 } from "../common";
 import { parseEventLogs } from "viem";
-import { lTokenAbi } from "@/generated";
+import { lTokenAbi } from "@/types";
 
 export const revalidate = 0;
 

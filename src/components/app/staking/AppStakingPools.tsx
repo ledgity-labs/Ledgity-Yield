@@ -9,7 +9,7 @@ import {
 import {
   useReadLdyStakingGetEarnedUser,
   useReadLdyStakingGetUserStakes,
-} from "@/generated";
+} from "@/types";
 import { QueryKey, useQueryClient } from "@tanstack/react-query";
 import { zeroAddress } from "viem";
 import { useAccount, usePublicClient } from "wagmi";

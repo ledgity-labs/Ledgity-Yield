@@ -9,7 +9,7 @@ import { erc20Abi, zeroAddress } from "viem";
 import {
   useReadLdyStakingRewardRatePerSec,
   useReadLdyStakingTotalWeightedStake,
-} from "@/generated";
+} from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const AppStaking: FC = () => {

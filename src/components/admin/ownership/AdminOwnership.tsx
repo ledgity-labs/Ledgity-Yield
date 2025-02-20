@@ -5,7 +5,7 @@ import { AdminAddressSetter } from "../AdminAddressSetter";
 import {
   useReadGlobalOwnerPendingOwner,
   useSimulateGlobalOwnerAcceptOwnership,
-} from "@/generated";
+} from "@/types";
 import {
   UseSimulateContractReturnType,
   useAccount,

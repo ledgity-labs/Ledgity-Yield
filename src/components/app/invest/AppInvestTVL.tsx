@@ -2,7 +2,7 @@ import { Amount, Card, Spinner } from "@/components/ui";
 import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
 import { FC, useEffect, useState } from "react";
 import { getContractAddress } from "@/lib/getContractAddress";
-import { lTokenAbi } from "@/generated";
+import { lTokenAbi } from "@/types";
 import { formatUnits, parseUnits } from "viem";
 import { watchBlockNumber, readContracts } from "@wagmi/core";
 import { wagmiConfig } from "../../../config/wagmi";

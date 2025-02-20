@@ -6,7 +6,7 @@ import {
   useReadLTokenWithdrawalFeeInEth,
   useSimulatePreMiningInstantUnlock,
   useSimulatePreMiningRequestUnlock,
-} from "@/generated";
+} from "@/types";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { UseSimulateContractReturnType, useAccount } from "wagmi";
 import { formatUnits, parseUnits, zeroAddress } from "viem";

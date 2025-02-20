@@ -1,4 +1,4 @@
-import { lTokenAbi } from "@/generated";
+import { lTokenAbi } from "@/types";
 import { useReadContracts } from "wagmi";
 import { LTokenInfo } from "../../types";
 import { zeroAddress } from "viem";

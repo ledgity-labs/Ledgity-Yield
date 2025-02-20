@@ -5,7 +5,7 @@ import {
   useReadGlobalPausePaused,
   useSimulateGlobalPausePause,
   useSimulateGlobalPauseUnpause,
-} from "@/generated";
+} from "@/types";
 import { TxButton } from "@/components/ui";
 import { UseSimulateContractReturnType, useBlockNumber } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";

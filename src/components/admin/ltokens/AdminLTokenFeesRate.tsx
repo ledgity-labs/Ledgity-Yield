@@ -3,7 +3,7 @@ import { RateInput } from "@/components/ui/RateInput";
 import {
   useReadLTokenFeesRateUd7x3,
   useSimulateLTokenSetFeesRate,
-} from "@/generated";
+} from "@/types";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import { parseUnits } from "viem";

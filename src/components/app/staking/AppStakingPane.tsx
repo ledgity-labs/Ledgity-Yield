@@ -9,7 +9,7 @@ import {
 import { Address, formatUnits, parseUnits } from "viem";
 import { UseSimulateContractReturnType } from "wagmi";
 import { useContractAddress } from "@/hooks/useContractAddress";
-import { useSimulateLdyStakingStake } from "@/generated";
+import { useSimulateLdyStakingStake } from "@/types";
 import * as Slider from "@radix-ui/react-slider";
 import { StakeDurations } from "@/data/oldConstants";
 import { getAPRCalculation } from "@/lib/getAPRCalculation";
