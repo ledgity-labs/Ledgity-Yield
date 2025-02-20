@@ -1,45 +1,33 @@
 import {
-  useAccount,
-  useBalance,
-  useConnect,
-  useDisconnect,
-  useSwitchChain,
-  usePublicClient,
-} from "wagmi";
-import { useLocalStorage } from "../utils/useLocalStorage";
-import { mainnet, arbitrum } from "wagmi/chains";
-import { PublicClient } from "viem";
-import React, {
   ReactElement,
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
 } from "react";
+// Hooks
+import { useLocalStorage } from "../utils/useLocalStorage";
+import { useAccount, useBalance, usePublicClient, useSwitchChain } from "wagmi";
+// Functions
 import {
   NetworkConfig,
-  getNetworkConfig,
   getDefaultChainId,
-} from "../../functions/marketsAndNetworksConfig";
-import { ERC20TokenType, TokenInfo } from "../../types";
-import { Address } from "viem";
+  getNetworkConfig,
+} from "@/functions/marketsAndNetworksConfig";
+// Types
+import { Address, PublicClient } from "viem";
+import { ERC20TokenType, TokenInfo } from "@/types";
 
 export type Web3ContextData = {
   // Wallet
-  loading: boolean;
   isConnected: boolean;
-  connectWallet: (type?: string) => Promise<void>;
-  disconnectWallet: () => void;
-  currentAccount: string;
+  currentAccount: Address | undefined;
   balance: bigint | undefined;
-  connectorType: string | undefined;
   isOpenConnectModal: boolean;
   setIsOpenConnectModal: (isOpen: boolean) => void;
   // Network
   appChainId: number;
   walletChainId: number | undefined;
-  chainId: number;
   isChangingNetwork: boolean;
   displayTestnets: boolean;
   handleSwitchNetwork: (newChainId: number) => Promise<void>;
@@ -61,69 +49,31 @@ export function Web3ContextProvider({
 }): ReactElement {
   // Wagmi hooks
   const { address, isConnected, chain } = useAccount();
+  const lowercaseAddress = address?.toLowerCase() as Address;
   const { switchChainAsync } = useSwitchChain();
-  const { connectAsync, connectors } = useConnect();
-  const { disconnectAsync } = useDisconnect();
   const provider = usePublicClient();
   const { data: balance } = useBalance({
     address,
   });
 
   // Local state
-  const [loading, setLoading] = useState(false);
   const [isOpenConnectModal, setIsOpenConnectModal] = useState(false);
-  const [connectorType, setConnectorType] = useState<string | undefined>();
   const [isChangingNetwork, setIsChangingNetwork] = useState(false);
   const [lastWalletChainId, setLastWalletChainId] = useState<
     number | undefined
   >();
 
-  // Disconnect wallet handler
-  const disconnectWallet = useCallback(async () => {
-    console.log("=x==== DISCONNECT WALLET ====x=");
-    await disconnectAsync();
-    setLoading(false);
-    setConnectorType(undefined);
-  }, [disconnectAsync]);
-
-  // Connect wallet handler
-  const connectWallet = useCallback(
-    async (type?: string) => {
-      setLoading(true);
-      console.log("=o==== CONNECT WALLET ====o=");
-      try {
-        const connector = type
-          ? connectors.find((c) => c.id === type)
-          : connectors.find((c) => c.id === "injected");
-
-        if (connector) {
-          await connectAsync({ connector });
-          setConnectorType(connector.id);
-        }
-      } catch (e: any) {
-        console.log("=!=== error on activation ===!=", e);
-        setConnectorType(undefined);
-      }
-      setLoading(false);
-    },
-    [connectAsync, connectors, disconnectWallet],
-  );
-
   // Testnet display handling
-  const [displayTestnets, setDisplayTestnets] = useLocalStorage<boolean>(
-    "displayTesnets",
-    false,
-  );
+  const { localData: displayTestnets, setLocalData: setDisplayTestnets } =
+    useLocalStorage<boolean>("displayTesnets", false);
 
   function handleSetDisplayTestnets(value: boolean) {
     setDisplayTestnets(value);
   }
 
   // Network handling
-  const [storedChainId, setStoredChainId] = useLocalStorage<string>(
-    "chainId",
-    String(getDefaultChainId()),
-  );
+  const { localData: storedChainId, setLocalData: setStoredChainId } =
+    useLocalStorage<string>("chainId", String(getDefaultChainId()));
   const [appChainId, setAppChainId] = useState<number>(() => {
     if (isConnected && chain?.id) return chain.id;
     return storedChainId ? parseInt(storedChainId) : getDefaultChainId();
@@ -159,23 +109,6 @@ export function Web3ContextProvider({
             });
           } else {
             throw Error(err.message);
-          }
-        }
-
-        // Handle WalletConnect reconnection if needed
-        if (connectorType?.includes("walletConnect")) {
-          let walletConnectType = "";
-
-          if (newChainId === mainnet.id) walletConnectType = "walletConnect";
-          if (newChainId === arbitrum.id) walletConnectType = "walletConnect";
-
-          if (!walletConnectType) {
-            console.warn(
-              "WalletConnect type not found for chainId:",
-              newChainId,
-            );
-          } else {
-            await connectWallet(walletConnectType);
           }
         }
       }
@@ -275,19 +208,14 @@ export function Web3ContextProvider({
     <Web3Context.Provider
       value={{
         // Wallet
-        loading,
         isConnected,
-        connectWallet,
-        disconnectWallet,
-        currentAccount: address?.toLowerCase() || "",
+        currentAccount: lowercaseAddress ?? undefined,
         balance: balance?.value,
-        connectorType,
         isOpenConnectModal,
         setIsOpenConnectModal,
         // Network
         appChainId,
         walletChainId: chain?.id,
-        chainId: appChainId,
         isChangingNetwork,
         displayTestnets,
         handleSwitchNetwork,
