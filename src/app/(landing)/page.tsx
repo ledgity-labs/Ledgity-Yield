@@ -1,12 +1,12 @@
 "use client";
 
-import Footer from "@/components/Footer";
+import { Footer } from "@/components/layout/Footer";
 import HomeFeatures from "@/components/landing/HomeFeatures";
 import HomeHero from "@/components/landing/HomeHero";
 import HomeHowItWorks from "@/components/landing/HomeHowItWorks";
 import HomePartners from "@/components/landing/HomePartners";
 
-function Page() {
+function LandingPage() {
   return (
     <>
       <HomeHero />
@@ -20,4 +20,4 @@ function Page() {
   );
 }
 
-export default Page;
+export default LandingPage;
