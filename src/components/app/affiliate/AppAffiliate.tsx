@@ -13,13 +13,13 @@ import {
 } from "@/functions/createAffiliateCode";
 import { FC, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { useCopyToClipboard } from "usehooks-ts";
+import { useCopyToClipboard } from "@/hooks/utils/useCopyToClipboard";
 import { getAddress } from "viem";
 
 export const AppAffiliate: FC = () => {
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [copiedText, copy] = useCopyToClipboard();
+  const { copyToClipboard } = useCopyToClipboard();
   const [affiliateUrl, setAffiliateUrl] = useState<string>(
     "https://ledgity.finance/example",
   );
@@ -27,15 +27,10 @@ export const AppAffiliate: FC = () => {
   const [isError, setIsError] = useState<boolean>(false);
   const [affiliateData, setAffiliateData] = useState<AffiliateResponse>();
 
-  const handleCopy = (text: string) => {
-    copy(text)
-      .then(() => {
-        console.log("Copied!", { text });
-      })
-      .catch((error) => {
-        console.error("Failed to copy!", error);
-      });
-  };
+  function handleCopy(text: string | undefined) {
+    if (!text) return;
+    copyToClipboard(text);
+  }
 
   const sendAffiliateRequest = async () => {
     if (walletAddress?.length) {
@@ -114,12 +109,12 @@ export const AppAffiliate: FC = () => {
             commission and help your friends get stable yield.
           </div>
           <div className="relative flex bg-gray-300 w-full rounded-lg">
-            <i
-              className="ri-link rounded-full px-1 text-2xl font-bold absolute z-20 h-8 top-1/2 transform -translate-y-1/2 left-3 bg-none hover:cursor-pointer hover:bg-gray-100"
-              onClick={() =>
-                affiliateData && handleCopy(affiliateData.referralUrl)
-              }
-            ></i>
+            <button
+              disabled={!affiliateData}
+              onClick={() => handleCopy(affiliateData?.referralUrl)}
+            >
+              <i className="ri-link rounded-full px-1 text-2xl font-bold absolute z-20 h-8 top-1/2 transform -translate-y-1/2 left-3 bg-none hover:cursor-pointer hover:bg-gray-100" />
+            </button>
             <input
               type="text"
               value={affiliateData && affiliateData.referralUrl}

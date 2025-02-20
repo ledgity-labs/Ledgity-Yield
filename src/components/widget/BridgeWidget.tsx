@@ -1,4 +1,9 @@
-import { TxWidget } from "@xswap-link/sdk";
+import dynamic from "next/dynamic";
+
+const TxWidget = dynamic(
+  () => import("@xswap-link/sdk").then((mod) => mod.TxWidget),
+  { ssr: false }, // Ensures it loads only in the browser
+);
 
 const srcChain = "42161";
 const dstChain = "8453";

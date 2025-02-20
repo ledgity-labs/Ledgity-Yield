@@ -8,24 +8,29 @@ import {
   lightTheme,
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
-import merge from "lodash.merge";
 import { Blockie } from "@/components/icons/Blockie";
 
 // Built RainbowKit theme
-const ledgityTheme: Theme = merge(lightTheme(), {
+const baseTheme = lightTheme(); // Get the base theme
+
+const ledgityTheme: Theme = {
+  ...baseTheme,
   colors: {
+    ...baseTheme.colors,
     accentColor: "rgb(var(--primary-bg))",
     accentColorForeground: "rgb(var(--primary-fg))",
     profileForeground: "#eef2ff",
     modalBackdrop: "var(--modal-backdrop)",
   },
   blurs: {
+    ...baseTheme.blurs,
     modalOverlay: "blur(12px)",
   },
   fonts: {
+    ...baseTheme.fonts,
     body: "var(--font-body)",
   },
-} as Theme);
+};
 
 const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
   <Text>
