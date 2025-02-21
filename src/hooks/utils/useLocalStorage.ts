@@ -17,7 +17,7 @@ export function useLocalStorage<T>(
     try {
       const item = window.localStorage.getItem(key);
 
-      if (item !== JSON.stringify(initialValue)) {
+      if (item !== JSON.stringify(localData)) {
         setLocalData(item ? JSON.parse(item) : initialValue);
       }
     } catch (error) {

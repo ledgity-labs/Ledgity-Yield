@@ -54,7 +54,7 @@ export function useTokenInfos(
     ] as const;
   });
 
-  const rawData = useReadContracts({
+  const { data, error } = useReadContracts({
     query: {
       refetchInterval: 30 * 1000,
     },
@@ -62,22 +62,22 @@ export function useTokenInfos(
   });
 
   useEffect(() => {
-    if (rawData.error || !rawData?.data) {
+    if (error || !data) {
       return;
     }
 
     const formattedData: TokenInfo[] = [];
 
-    for (let i = 0; i < rawData.data.length; i += NB_DATA_POINTS) {
+    for (let i = 0; i < data.length; i += NB_DATA_POINTS) {
       const addressIndex = Math.floor(i / NB_DATA_POINTS);
       const address = tokenAddresses?.[addressIndex] ?? zeroAddress;
 
       if (
         !address ||
-        rawData.data
+        data
           .slice(i, i + NB_DATA_POINTS)
           .some((data) => data.result === undefined) ||
-        rawData.data
+        data
           .slice(i, i + NB_DATA_POINTS)
           .some((data) => data.error !== undefined)
       ) {
@@ -86,9 +86,9 @@ export function useTokenInfos(
 
       formattedData.push({
         address,
-        name: rawData.data[i].result as string,
-        symbol: rawData.data[i + 1].result as string,
-        decimals: rawData.data[i + 2].result as number,
+        name: data[i].result as string,
+        symbol: data[i + 1].result as string,
+        decimals: data[i + 2].result as number,
       });
     }
 
@@ -96,7 +96,7 @@ export function useTokenInfos(
       setCurrentValue(formattedData);
       setLocalData(formattedData);
     }
-  }, [rawData, currentValue]);
+  }, [data, error, currentValue]);
 
   return currentValue;
 }

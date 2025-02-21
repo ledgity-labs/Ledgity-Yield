@@ -74,7 +74,7 @@ export function useLTokenInfos(
     ] as const;
   });
 
-  const rawData = useReadContracts({
+  const { data, error } = useReadContracts({
     query: {
       refetchInterval: 30 * 1000,
     },
@@ -82,22 +82,22 @@ export function useLTokenInfos(
   });
 
   useEffect(() => {
-    if (rawData.error || !rawData?.data) {
+    if (error || !data) {
       return;
     }
 
     const formattedData: LTokenInfo[] = [];
 
-    for (let i = 0; i < rawData.data.length; i += NB_DATA_POINTS) {
+    for (let i = 0; i < data.length; i += NB_DATA_POINTS) {
       const addressIndex = Math.floor(i / NB_DATA_POINTS);
       const address = tokenAddresses?.[addressIndex] ?? zeroAddress;
 
       if (
         !address ||
-        rawData.data
+        data
           .slice(i, i + NB_DATA_POINTS)
           .some((data) => data.result === undefined) ||
-        rawData.data
+        data
           .slice(i, i + NB_DATA_POINTS)
           .some((data) => data.error !== undefined)
       ) {
@@ -106,12 +106,12 @@ export function useLTokenInfos(
 
       formattedData.push({
         address,
-        name: rawData.data[i].result as string,
-        symbol: rawData.data[i + 1].result as string,
-        decimals: rawData.data[i + 2].result as number,
-        apr: rawData.data[i + 3].result as number,
-        totalSupply: rawData.data[i + 4].result as bigint,
-        balance: userAddress ? (rawData.data[i + 5].result as bigint) : 0n,
+        name: data[i].result as string,
+        symbol: data[i + 1].result as string,
+        decimals: data[i + 2].result as number,
+        apr: data[i + 3].result as number,
+        totalSupply: data[i + 4].result as bigint,
+        balance: userAddress ? (data[i + 5].result as bigint) : 0n,
       });
     }
 
@@ -119,7 +119,7 @@ export function useLTokenInfos(
       setCurrentValue(formattedData);
       setLocalData(formattedData);
     }
-  }, [rawData, userAddress, currentValue]);
+  }, [data, error, userAddress, currentValue]);
 
   return currentValue;
 }
