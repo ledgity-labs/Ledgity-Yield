@@ -36,7 +36,7 @@ export function AppInvest() {
                 Holders
               </h3>
               <div className="text-[1.92rem] text-fg/90 font-heading font-bold">
-                N/A
+                1,784
               </div>
             </div>
           </div>
