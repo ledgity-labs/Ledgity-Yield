@@ -23,6 +23,8 @@ import {
 import { Bar } from "react-chartjs-2";
 import "chartjs-adapter-luxon";
 import { useGrowthRevenueData } from "./useGrowthRevenueData";
+import { useWeb3Context } from "@/hooks/context/Web3ContextProvider";
+
 Chart.register(
   BarElement,
   CategoryScale,
@@ -38,6 +40,7 @@ const secondsPerDay = 60 * 60 * 24;
 export const AppDashboardChart: React.PropsWithoutRef<typeof Card> = ({
   className,
 }) => {
+  const { currentAccount } = useWeb3Context();
   const [period, setPeriod] = useState("90");
   const [type, setType] = useState<"revenue" | "growth">("revenue");
   const { growthData, isDataLoading, isDataError, dataErrorMessage } =
@@ -277,8 +280,8 @@ export const AppDashboardChart: React.PropsWithoutRef<typeof Card> = ({
   };
 
   useEffect(() => {
-    if (!isDataLoading) computeChartData();
-  }, [growthData, isDataLoading, period]);
+    if (!isDataLoading && currentAccount) computeChartData();
+  }, [growthData, isDataLoading, period,currentAccount]);
 
   return (
     <article

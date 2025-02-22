@@ -1,5 +1,4 @@
 import { readLToken } from "@/types";
-import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { wagmiConfig } from "../../../config/wagmi";
 import { getContractAddress } from "@/lib/getContractAddress";
@@ -9,6 +8,8 @@ import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 // Functions
 import { fetchTokenPriceUsd } from "../../../functions/fetchTokenPriceUsd";
+// Context
+import { useAppDataContext } from "@/hooks/context/AppDataContextProvider";
 
 type TokenData = {
   [ltokenNames: string]: {
@@ -52,7 +53,7 @@ export function useGrowthRevenueData(): {
   isDataError: boolean;
   dataErrorMessage?: string;
 } {
-  const lTokens = useAvailableLTokens();
+  const { lTokenInfosCurrentChain } = useAppDataContext();
   const currentChain = useCurrentChain();
   const account = useAccount();
   const [data, setData] = useState<Data>({});
@@ -101,6 +102,7 @@ export function useGrowthRevenueData(): {
       const investmentStartData =
         investmentStartRequest?.data?.[`c${account.chainId}_ltokens`];
       if (!investmentStartData) {
+        return;
       }
 
       // Convert revenue to decimals and then to USD
@@ -195,9 +197,9 @@ export function useGrowthRevenueData(): {
       }
 
       // Push not yet minted rewards as data point
-      for (const lToken of lTokens) {
-        const underlyingSymbol = lToken.slice(1);
-        const lTokenAddress = getContractAddress(lToken, currentChain.id)!;
+      for (const lToken of lTokenInfosCurrentChain) {
+        const underlyingSymbol = lToken.symbol.slice(1);
+        const lTokenAddress = lToken.address;
 
         const [decimals, balanceBeforeBigInt, unclaimedRewards, usdRate] =
           await Promise.all([
@@ -230,7 +232,7 @@ export function useGrowthRevenueData(): {
         const balanceBefore = formattedBalanceBefore * usdRate;
         const growth = balanceBefore ? revenue / balanceBefore : 0;
 
-        newData[lToken].push({
+        newData[lToken.symbol].push({
           timestamp,
           revenue,
           balanceBefore,
