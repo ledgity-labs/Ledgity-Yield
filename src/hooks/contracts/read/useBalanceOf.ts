@@ -6,7 +6,7 @@ import { useBlockNumber } from "wagmi";
 import { Address, zeroAddress } from "viem";
 
 export function useBalanceOf(
-  address: Address,
+  address: Address | undefined,
   account: Address | undefined,
 ): bigint {
   const { appChainId } = useWeb3Context();
@@ -15,7 +15,7 @@ export function useBalanceOf(
   const { data: blockNumber } = useBlockNumber({ watch: true });
 
   const { data, queryKey } = useReadGenericErc20BalanceOf({
-    address: address,
+    address: address || zeroAddress,
     args: [account || zeroAddress],
   });
 
