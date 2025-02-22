@@ -1,12 +1,9 @@
+import { useWeb3Context } from "./context/Web3ContextProvider";
 import { getContractAddress } from "@/lib/getContractAddress";
-import { usePublicClient } from "wagmi";
-import { useCurrentChain } from "./useCurrentChain";
 
-export const useContractAddress = (contractName: string) => {
-  // Return undefined if the frontend is not connected to any chain
-  const currentChain = useCurrentChain();
-  if (!currentChain) return undefined;
-
-  // Else, try to get the contract address on the current chain
-  return getContractAddress(contractName, currentChain.id);
+export const useContractAddress = (
+  contractName: string,
+): `0x${string}` | undefined => {
+  const { appChainId } = useWeb3Context();
+  return getContractAddress(contractName, appChainId);
 };

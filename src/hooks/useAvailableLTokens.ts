@@ -1,29 +1,7 @@
-import { deployments } from "../data/deployments";
-import { dependencies } from "../data/dependencies";
-import { useCurrentChain } from "./useCurrentChain";
+import { useWeb3Context } from "./context/Web3ContextProvider";
+import { lTokenAddresses } from "@/data/addresses";
 
-export function useAvailableLTokens() {
-  // Return empty results if the frontend is not connected to any chain
-  const currentChain = useCurrentChain();
-  if (!currentChain) return [];
-
-  // Return empty results if no contracts have been deployed on the current chain
-  if (!Object.keys(deployments).includes(currentChain.id.toString())) return [];
-
-  // Else, get contracts deployed on the current chain
-  const contracts =
-    deployments[currentChain.id.toString() as keyof typeof deployments][0]
-      .contracts;
-
-  // Retrieve L-Tokens contracts (ones that are prefixed with "L" + the name of a dependency)
-  let lTokensNames: string[] = [];
-  Object.keys(contracts).forEach((contractName: string) => {
-    if (
-      Object.keys(dependencies).some((suffix) => contractName === "L" + suffix)
-    ) {
-      lTokensNames.push(contractName);
-    }
-  });
-
-  return lTokensNames;
+export function useAvailableLTokens(): string[] {
+  const { appChainId } = useWeb3Context();
+  return Object.keys(lTokenAddresses[appChainId] || {});
 }

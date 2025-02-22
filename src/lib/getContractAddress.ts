@@ -1,16 +1,8 @@
-import { deployments } from "../data/deployments";
-import { dependencies } from "../data/dependencies";
+import { ADDRESSES } from "@/data/addresses";
 
-export const getContractAddress = (
+export function getContractAddress(
   contractName: string,
   chainId: number | string,
-): `0x${string}` | undefined => {
-  // Cast to string
-  const chainIdString = chainId.toString();
-
-  const addressFromDependencies = dependencies?.[contractName]?.[chainIdString];
-  const addressFromDeployments =
-    deployments?.[chainIdString]?.[0]?.contracts?.[contractName]?.address;
-
-  return addressFromDependencies ?? addressFromDeployments;
-};
+): `0x${string}` | undefined {
+  return (ADDRESSES as any)[chainId]?.[contractName as string];
+}
