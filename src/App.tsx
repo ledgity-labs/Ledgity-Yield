@@ -17,11 +17,11 @@ function App({ children }: { children: ReactElement }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <Web3ContextProvider>
-          <AppDataContextProvider>
-            <RainbowKitContextProvider>{children}</RainbowKitContextProvider>
-          </AppDataContextProvider>
-        </Web3ContextProvider>
+        <RainbowKitContextProvider>
+          <Web3ContextProvider>
+            <AppDataContextProvider>{children}</AppDataContextProvider>
+          </Web3ContextProvider>
+        </RainbowKitContextProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
