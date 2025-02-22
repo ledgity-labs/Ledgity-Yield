@@ -11,10 +11,9 @@ import { lTokenAbi, LTokenInfo } from "@/types";
 const NB_DATA_POINTS = 6;
 
 export function useLTokenInfos(
-  tokenAddresses: (`0x${string}` | undefined)[],
+  tokenTargets: { address: `0x${string}` | undefined; chainId: number }[],
   userAddress?: `0x${string}`,
 ): LTokenInfo[] {
-  const { appChainId } = useWeb3Context();
   const [currentValue, setCurrentValue] = useState<LTokenInfo[]>([]);
 
   const { localData, setLocalData } = useLocalStorage<LTokenInfo[]>(
@@ -26,47 +25,49 @@ export function useLTokenInfos(
     if (!currentValue.length && localData.length) setCurrentValue(localData);
   }, [currentValue]);
 
-  useEffect(() => {
-    setLocalData([]);
-    setCurrentValue([]);
-  }, [appChainId]);
-
-  const tokensFiltered = [...new Set(tokenAddresses)].filter(
-    (address) =>
+  const tokensFiltered = [...new Set(tokenTargets)].filter(
+    ({ address }) =>
       address !== "0x0000000000000000000000000000000000000000" &&
       address !== undefined,
   );
 
-  const calls = tokensFiltered?.flatMap((tokenAddress) => {
-    const address = tokenAddress ?? zeroAddress;
+  const calls = tokensFiltered?.flatMap((token) => {
+    const address = token.address ?? zeroAddress;
+    const chainId = token.chainId;
     return [
       {
         address,
+        chainId,
         abi: lTokenAbi,
         functionName: "name",
       },
       {
         address,
+        chainId,
         abi: lTokenAbi,
         functionName: "symbol",
       },
       {
         address,
+        chainId,
         abi: lTokenAbi,
         functionName: "decimals",
       },
       {
         address,
+        chainId,
         abi: lTokenAbi,
         functionName: "getAPR",
       },
       {
         address,
+        chainId,
         abi: lTokenAbi,
         functionName: "totalSupply",
       },
       {
         address,
+        chainId,
         abi: lTokenAbi,
         functionName: "balanceOf",
         args: [userAddress ?? zeroAddress],
@@ -74,7 +75,7 @@ export function useLTokenInfos(
     ] as const;
   });
 
-  const { data, error } = useReadContracts({
+  const { data, error, refetch } = useReadContracts({
     query: {
       refetchInterval: 30 * 1000,
     },
@@ -90,7 +91,8 @@ export function useLTokenInfos(
 
     for (let i = 0; i < data.length; i += NB_DATA_POINTS) {
       const addressIndex = Math.floor(i / NB_DATA_POINTS);
-      const address = tokenAddresses?.[addressIndex] ?? zeroAddress;
+      const address = tokenTargets?.[addressIndex].address ?? zeroAddress;
+      const chainId = tokenTargets?.[addressIndex].chainId ?? 0;
 
       if (
         !address ||
@@ -106,6 +108,7 @@ export function useLTokenInfos(
 
       formattedData.push({
         address,
+        chainId,
         name: data[i].result as string,
         symbol: data[i + 1].result as string,
         decimals: data[i + 2].result as number,
