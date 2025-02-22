@@ -4,7 +4,6 @@ import { AppInvestTVL } from "./AppInvestTVL";
 import { AppInvestTokens } from "./AppInvestTokens";
 import { Card } from "@/components/ui";
 import Link from "next/link";
-import { AppInvestHoldersCount } from "./AppInvestHoldersCount";
 
 export function AppInvest() {
   return (
@@ -27,7 +26,9 @@ export function AppInvest() {
               <h3 className="font-bold text-lg text-fg/50 whitespace-nowrap">
                 Holders
               </h3>
-              <AppInvestHoldersCount className="text-[1.92rem] text-fg/90 font-heading font-bold" />
+              <div className="text-[1.92rem] text-fg/90 font-heading font-bold">
+                N/A
+              </div>
             </div>
           </div>
         </div>

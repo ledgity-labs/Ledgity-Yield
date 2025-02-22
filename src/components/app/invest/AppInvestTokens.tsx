@@ -1,5 +1,4 @@
 import { Spinner } from "@/components/ui/Spinner";
-import { getContractAddress } from "@/lib/getContractAddress";
 import { twMerge } from "tailwind-merge";
 // Components
 import { Amount, Button, Rate } from "@/components/ui";
@@ -14,17 +13,16 @@ import {
 import { TokenLogo } from "../../ui/TokenLogo";
 import { DepositDialog } from "../DepositDialog";
 import { WithdrawDialog } from "../WithdrawDialog";
-// Functions
-import { formatUnits } from "viem";
 // Hooks
 import { useTokenPricesUsd } from "../../../hooks/api/useTokenPricesUsd";
 import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
 import { useEffect, useRef, useState } from "react";
-import { useLTokenInfos } from "@/hooks/contracts/read/useLTokenInfos";
 import { useLTokenMultichainTvl } from "@/hooks/contracts/useLTokenMultichainTvl";
-import { useCurrentChain } from "@/hooks/useCurrentChain";
-import { useAccount } from "wagmi";
+// Context
 import { useWeb3Context } from "@/hooks/context/Web3ContextProvider";
+import { useAppDataContext } from "@/hooks/context/AppDataContextProvider";
+// Functions
+import { formatUnits } from "viem";
 
 type Pool = {
   underlyingSymbol: string;
@@ -48,29 +46,25 @@ type Pool = {
  */
 export function AppInvestTokens({ className }: { className?: string }) {
   const { appChainId, currentAccount } = useWeb3Context();
+  const { lTokenInfosCurrentChain } = useAppDataContext();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const columnHelper = createColumnHelper<Pool>();
   const lTokens = useAvailableLTokens();
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState<Pool[]>([]);
-  const currentChain = useCurrentChain();
+
   let isActionsDialogOpen = useRef(false);
   let futureTableData = useRef<Pool[]>([]);
 
-  const tokenInfos = useLTokenInfos(
-    lTokens.map((symbol) => getContractAddress(symbol, currentChain?.id || 0)),
-    currentAccount,
-  );
-
   const underlyingPrices = useTokenPricesUsd(
-    tokenInfos.map((info) => info.symbol.slice(1)),
+    lTokenInfosCurrentChain.map((info) => info.symbol.slice(1)),
   );
 
   const tvlData = useLTokenMultichainTvl();
 
   useEffect(() => {
-    const newTableData = tokenInfos.map((data) => {
+    const newTableData = lTokenInfosCurrentChain.map((data) => {
       const { symbol, apr, balance, decimals } = data;
       const tokenPriceUsd =
         underlyingPrices[symbol.toLowerCase().slice(1)] || 1;
@@ -97,7 +91,13 @@ export function AppInvestTokens({ className }: { className?: string }) {
       setTableData(newTableData);
       setIsLoading(false);
     }
-  }, [currentAccount, appChainId, tokenInfos, tvlData, underlyingPrices]);
+  }, [
+    currentAccount,
+    appChainId,
+    lTokenInfosCurrentChain,
+    tvlData,
+    underlyingPrices,
+  ]);
 
   const columns = [
     columnHelper.accessor("underlyingSymbol", {
@@ -233,10 +233,7 @@ export function AppInvestTokens({ className }: { className?: string }) {
 
   return (
     <article
-      className={twMerge(
-        "grid w-full md:grid-cols-[repeat(5,auto)] grid-cols-[repeat(4,auto)] border-b border-b-fg/20",
-        className,
-      )}
+      className={`grid w-full md:grid-cols-[repeat(5,auto)] grid-cols-[repeat(4,auto)] border-b border-b-fg/20 ${className}`}
     >
       {headerGroup.headers.map((header, index) => {
         return (
