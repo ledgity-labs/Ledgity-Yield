@@ -21,14 +21,14 @@ export const marketConfigsIndex: {
     addresses: ADDRESSES[ChainId.arbitrum_one],
   },
   [ChainId.base]: {
-    marketTitle: "Arbitrum",
-    chainId: ChainId.arbitrum_one,
-    addresses: ADDRESSES[ChainId.arbitrum_one],
+    marketTitle: "Base",
+    chainId: ChainId.base,
+    addresses: ADDRESSES[ChainId.base],
   },
   [ChainId.linea]: {
-    marketTitle: "Arbitrum",
-    chainId: ChainId.arbitrum_one,
-    addresses: ADDRESSES[ChainId.arbitrum_one],
+    marketTitle: "Linea",
+    chainId: ChainId.linea,
+    addresses: ADDRESSES[ChainId.linea],
   },
   // [ChainId.hardhat]: {
   //   marketTitle: "Hardhat",

@@ -13,7 +13,7 @@ import { dependencies } from "../../contracts/dependencies";
 // @dev Reexport to have all addresses in one place
 export { dependencies as dependenciesAddresses };
 
-type ContractName =
+export type ContractName =
   | "GlobalBlacklist"
   | "GlobalOwner"
   | "GlobalPause"
