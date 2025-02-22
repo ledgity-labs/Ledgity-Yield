@@ -14,15 +14,9 @@ import { TokenLogo } from "../../ui/TokenLogo";
 import { DepositDialog } from "../DepositDialog";
 import { WithdrawDialog } from "../WithdrawDialog";
 // Hooks
-import { useTokenPricesUsd } from "../../../hooks/api/useTokenPricesUsd";
-import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
 import { useEffect, useRef, useState } from "react";
-import { useLTokenMultichainTvl } from "@/hooks/contracts/useLTokenMultichainTvl";
 // Context
-import { useWeb3Context } from "@/hooks/context/Web3ContextProvider";
 import { useAppDataContext } from "@/hooks/context/AppDataContextProvider";
-// Functions
-import { formatUnits } from "viem";
 
 type Pool = {
   underlyingSymbol: string;
@@ -45,42 +39,24 @@ type Pool = {
  *    with most up to date data.
  */
 export function AppInvestTokens({ className }: { className?: string }) {
-  const { appChainId, currentAccount } = useWeb3Context();
-  const { lTokenInfosCurrentChain } = useAppDataContext();
-
+  const { lTokenInfosCurrentChain, tvlMetrics } = useAppDataContext();
   const [sorting, setSorting] = useState<SortingState>([]);
   const columnHelper = createColumnHelper<Pool>();
-  const lTokens = useAvailableLTokens();
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState<Pool[]>([]);
 
   let isActionsDialogOpen = useRef(false);
   let futureTableData = useRef<Pool[]>([]);
 
-  const underlyingPrices = useTokenPricesUsd(
-    lTokenInfosCurrentChain.map((info) => info.symbol.slice(1)),
-  );
-
-  const tvlData = useLTokenMultichainTvl();
-
   useEffect(() => {
     const newTableData = lTokenInfosCurrentChain.map((data) => {
       const { symbol, apr, balance, decimals } = data;
-      const tokenPriceUsd =
-        underlyingPrices[symbol.toLowerCase().slice(1)] || 1;
-
-      const totalTvl =
-        Number(
-          formatUnits(
-            tvlData.find((tvl) => tvl.symbol === symbol)?.totalTvl || 0n,
-            decimals,
-          ),
-        ) * tokenPriceUsd;
+      const tokenTvl = tvlMetrics.byToken[symbol] || 0;
 
       return {
         underlyingSymbol: symbol.slice(1),
         invested: balance,
-        tvl: totalTvl,
+        tvl: tokenTvl,
         decimals,
         apr: apr,
       };
@@ -91,13 +67,7 @@ export function AppInvestTokens({ className }: { className?: string }) {
       setTableData(newTableData);
       setIsLoading(false);
     }
-  }, [
-    currentAccount,
-    appChainId,
-    lTokenInfosCurrentChain,
-    tvlData,
-    underlyingPrices,
-  ]);
+  }, [lTokenInfosCurrentChain]);
 
   const columns = [
     columnHelper.accessor("underlyingSymbol", {

@@ -1,11 +1,14 @@
 "use client";
 
-import { AppInvestTVL } from "./AppInvestTVL";
 import { AppInvestTokens } from "./AppInvestTokens";
 import { Card } from "@/components/ui";
 import Link from "next/link";
+import { useAppDataContext } from "@/hooks/context/AppDataContextProvider";
+import { Spinner } from "@/components/ui/Spinner";
 
 export function AppInvest() {
+  const { tvlMetrics, isLoadingPrices } = useAppDataContext();
+
   return (
     <div className="lg:w-[980px] w-full flex flex-col gap-8 pb-8">
       <Card
@@ -19,7 +22,13 @@ export function AppInvest() {
         <div className="flex sm:gap-10 gap-6 justify-between flex-wrap-reverse sm:p-10 p-5 pt-8 pb-0">
           <div className="flex flex-col gap-2">
             <h3 className="font-bold text-lg text-fg/50">TVL</h3>
-            <AppInvestTVL className="text-[1.92rem] text-fg font-heading font-bold" />
+            <div className="text-[1.92rem] text-fg font-heading font-bold">
+              {isLoadingPrices ? (
+                <Spinner />
+              ) : (
+                "$" + tvlMetrics.total.toLocaleString()
+              )}
+            </div>
           </div>
           <div className="flex sm:gap-14 gap-10 flex-wrap">
             <div className="flex flex-col md:items-end items-start gap-2">
