@@ -20,6 +20,7 @@ import { TokenInfo, LTokenInfo } from "@/types";
 type AppDataContext = {
   referralCode: string;
   lTokenInfos: LTokenInfo[];
+  lTokenInfosCurrentChain: LTokenInfo[];
   tokenInfos: TokenInfo[];
 };
 
@@ -52,9 +53,15 @@ export function AppDataContextProvider({
 
   // ==== Token Datas ==== //
 
-  const lTokenInfos = useLTokenInfos(
-    Object.values(lTokenAddresses[appChainId]),
-    currentAccount,
+  const ltokens = Object.keys(lTokenAddresses).flatMap((chainId) =>
+    Object.values(lTokenAddresses[Number(chainId)]).map((address) => ({
+      address,
+      chainId: Number(chainId),
+    })),
+  );
+  const lTokenInfos = useLTokenInfos(ltokens, currentAccount);
+  const lTokenInfosCurrentChain = lTokenInfos.filter(
+    (lToken) => lToken.chainId === appChainId,
   );
   const tokenInfos = useTokenInfos(
     Object.values(dependenciesAddresses[appChainId]),
@@ -65,6 +72,7 @@ export function AppDataContextProvider({
       value={{
         referralCode,
         lTokenInfos,
+        lTokenInfosCurrentChain,
         tokenInfos,
       }}
     >

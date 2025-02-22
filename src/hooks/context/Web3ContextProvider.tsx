@@ -94,11 +94,12 @@ export function Web3ContextProvider({
   // Handle network switching
   async function handleSwitchNetwork(newChainId: number) {
     try {
+      if (isChangingNetwork) return;
       if (newChainId === appChainId && newChainId === chain?.id) return;
 
       setIsChangingNetwork(true);
 
-      if (isConnected && switchChainAsync) {
+      if (isConnected) {
         try {
           await switchChainAsync({ chainId: newChainId });
         } catch (err: any) {
