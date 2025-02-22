@@ -4,7 +4,6 @@ import {
   globalBlacklistAddress,
   globalOwnerAddress,
   globalPauseAddress,
-  ldyAddress,
   ldyStakingAddress,
   lTokenSignalerAddress,
 } from "@/types";
@@ -70,23 +69,23 @@ function fetchChainAddresses(
     LDYStaking: ldyStakingAddress[chainId] || zeroAddress,
     LTokenSignaler: (lTokenSignalerAddress as any)[chainId] || zeroAddress,
     // Tokens
-    LDY: (ldyAddress as any)[chainId] || zeroAddress,
     LEURC: lTokenAddresses[chainId]?.LEURC || zeroAddress,
     LUSDC: lTokenAddresses[chainId]?.LUSDC || zeroAddress,
+    LDY: dependencies[chainId]?.LDY || zeroAddress,
     EURC: dependencies[chainId]?.EURC || zeroAddress,
     USDC: dependencies[chainId]?.USDC || zeroAddress,
   };
 }
 
 const addressesProd: {
-  [chainId: string]: {
+  [chainId: number]: {
     [key in ContractName]: Address;
   };
 } = {
-  mainnet: fetchChainAddresses(ChainId.mainnet),
-  arbitrum_one: fetchChainAddresses(ChainId.arbitrum_one),
-  base: fetchChainAddresses(ChainId.base),
-  linea: fetchChainAddresses(ChainId.linea),
+  [ChainId.mainnet]: fetchChainAddresses(ChainId.mainnet),
+  [ChainId.arbitrum_one]: fetchChainAddresses(ChainId.arbitrum_one),
+  [ChainId.base]: fetchChainAddresses(ChainId.base),
+  [ChainId.linea]: fetchChainAddresses(ChainId.linea),
 };
 
 export const ADDRESSES = addressesProd;

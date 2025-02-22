@@ -15,7 +15,7 @@ export function useBalanceOf(
   const { data: blockNumber } = useBlockNumber({ watch: true });
 
   const { data, queryKey } = useReadGenericErc20BalanceOf({
-    address: address || zeroAddress,
+    address,
     args: [account || zeroAddress],
   });
 
