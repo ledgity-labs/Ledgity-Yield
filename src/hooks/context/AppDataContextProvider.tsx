@@ -12,6 +12,9 @@ import { useSearchParams } from "next/navigation";
 import { useLocalStorage } from "../utils/useLocalStorage";
 import { useTokenInfos } from "@/hooks/contracts/read/useTokenInfos";
 import { useLTokenInfos } from "@/hooks/contracts/read/useLTokenInfos";
+import { useTokenPricesUsd } from "@/hooks/api/useTokenPricesUsd";
+// Functions
+import { computeTvlMetrics, TvlMetrics } from "@/functions/helpers";
 // Data
 import { lTokenAddresses, dependenciesAddresses } from "@/data/addresses";
 // Types
@@ -21,6 +24,8 @@ type AppDataContext = {
   referralCode: string;
   lTokenInfos: LTokenInfo[];
   lTokenInfosCurrentChain: LTokenInfo[];
+  tvlMetrics: TvlMetrics;
+  isLoadingPrices: boolean;
   tokenInfos: TokenInfo[];
 };
 
@@ -67,12 +72,24 @@ export function AppDataContextProvider({
     Object.values(dependenciesAddresses[appChainId]),
   );
 
+  // ==== Prices ==== //
+
+  const underlyingSymbols = [
+    ...new Set(lTokenInfos.map((lToken) => lToken.symbol.slice(1))),
+  ];
+  const tokenPrices = useTokenPricesUsd(underlyingSymbols);
+  const isLoadingPrices = Object.keys(tokenPrices).length === 0;
+
+  const tvlMetrics = computeTvlMetrics(lTokenInfos, tokenPrices);
+
   return (
     <AppDataContext.Provider
       value={{
         referralCode,
         lTokenInfos,
         lTokenInfosCurrentChain,
+        tvlMetrics,
+        isLoadingPrices,
         tokenInfos,
       }}
     >

@@ -49,8 +49,7 @@ export async function fetchTokenPriceUsd(tokenSymbol: string): Promise<number> {
     const id = symbolToId.find((item) => item.symbol === symbol)?.id;
 
     if (!id) {
-      console.error("Failed to find id for symbol:", symbol);
-      return cached ? JSON.parse(cached).price : 0;
+      throw Error(`Failed to find id for symbol: ${symbol}`);
     }
 
     const response = await fetch(
@@ -81,9 +80,8 @@ export async function fetchTokenPriceUsd(tokenSymbol: string): Promise<number> {
   } catch (error) {
     console.error("Failed to fetch price:", error);
     // If we have cached data, use it even if it's old
-    if (cached) {
-      return JSON.parse(cached).price;
-    }
+    if (cached) return JSON.parse(cached).price;
+
     return 0;
   }
 }
