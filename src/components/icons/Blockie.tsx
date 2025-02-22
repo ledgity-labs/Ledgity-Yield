@@ -1,18 +1,21 @@
 import makeBlockie from "ethereum-blockies-base64";
 import { useEnsAvatar, useEnsName } from "wagmi";
 import Image from "next/image";
+import { Address } from "viem";
 
 export function Blockie({
   address,
   size = 28,
   className,
 }: {
-  address: `0x${string}` | undefined;
+  address: string | undefined;
   size?: number;
   className?: string;
 }) {
+  const typedAddress = address ? (address as Address) : undefined;
+
   const { data: ensName } = useEnsName({
-    address,
+    address: typedAddress,
     chainId: 1,
   });
 
@@ -42,7 +45,7 @@ export function Blockie({
         />
       ) : (
         <Image
-          src={makeBlockie(!address ? "default" : address)}
+          src={makeBlockie(!typedAddress ? "default" : typedAddress)}
           width={size}
           height={size}
           alt="account-blockie"
