@@ -159,6 +159,7 @@ export const AppDashboardActivity: React.PropsWithoutRef<typeof Card> = ({
     try {
       if (!account?.address) {
         setActivityData([]);
+        setIsLoading(false);
         return;
       }
 
@@ -182,17 +183,18 @@ export const AppDashboardActivity: React.PropsWithoutRef<typeof Card> = ({
       const activities = result.data?.[`c${account.chainId}_activities`];
 
       if (!activities) {
-        throw new Error("No activities data returned from subgraph");
+        setActivityData([]);
+        setIsLoading(false);
+        return;
       }
 
       setActivityData(activities);
     } catch (e) {
       console.error("Failed to fetch activity data:", e);
-
       setActivityData([]);
-    } finally {
-      setIsLoading(false);
     }
+
+    setIsLoading(false);
   }, [account?.address, account?.chainId]);
 
   // Fetch data on mount and when account changes
