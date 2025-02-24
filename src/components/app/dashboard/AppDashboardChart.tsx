@@ -13,7 +13,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import "chartjs-adapter-luxon";
-import { useGrowthRevenueData } from "./useGrowthRevenueData";
+import { useGrowthRevenueData } from "@/hooks/subgraph/useGrowthRevenueData";
 import { useWeb3Context } from "@/hooks/context/Web3ContextProvider";
 // Components
 import { SwitchButton } from "@/components/buttons/SwitchButton";

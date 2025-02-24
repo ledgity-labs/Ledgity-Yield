@@ -1,7 +1,7 @@
 import { Amount, Card, Rate, Spinner } from "@/components/ui";
 import React, { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { useGrowthRevenueData } from "./useGrowthRevenueData";
+import { useGrowthRevenueData } from "@/hooks/subgraph/useGrowthRevenueData";
 
 export const AppDashboardGrowth: React.PropsWithoutRef<typeof Card> = ({
   className,
