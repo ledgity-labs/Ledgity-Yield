@@ -1,13 +1,4 @@
-import {
-  Card,
-  Switch,
-  RadioGroup,
-  RadioGroupItem,
-  formatAmount,
-  Spinner,
-  formatRate,
-  Amount,
-} from "@/components/ui";
+import { formatAmount, Spinner, formatRate, Amount } from "@/components/ui";
 import React, { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import {
@@ -24,6 +15,9 @@ import { Bar } from "react-chartjs-2";
 import "chartjs-adapter-luxon";
 import { useGrowthRevenueData } from "./useGrowthRevenueData";
 import { useWeb3Context } from "@/hooks/context/Web3ContextProvider";
+// Components
+import { SwitchButton } from "@/components/buttons/SwitchButton";
+import { RadioButtonGroup } from "@/components/buttons/RadioButtonGroup";
 
 Chart.register(
   BarElement,
@@ -35,14 +29,10 @@ Chart.register(
   LogarithmicScale,
 );
 
-const secondsPerDay = 60 * 60 * 24;
-
-export const AppDashboardChart: React.PropsWithoutRef<typeof Card> = ({
-  className,
-}) => {
-  const { currentAccount } = useWeb3Context();
+  const { currentAccount, isChangingNetwork } = useWeb3Context();
   const [period, setPeriod] = useState("90");
-  const [type, setType] = useState<"revenue" | "growth">("revenue");
+  const [isGrowthGraph, setIsGrowthGraph] = useState(false);
+
   const { growthData, isDataLoading, isDataError, dataErrorMessage } =
     useGrowthRevenueData();
   const [labels, setLabels] = useState<Date[]>([]);
@@ -51,8 +41,13 @@ export const AppDashboardChart: React.PropsWithoutRef<typeof Card> = ({
 
   let delayed: boolean;
 
-  const computeLabels = () => {
-    let _labels: Date[] = [];
+  const periodOptions = [
+    { value: "7", label: "7D" },
+    { value: "30", label: "1M" },
+    { value: "90", label: "3M" },
+    { value: "365", label: "1Y" },
+    { value: "all", label: "All" },
+  ];
 
     let numberOfDays = 0;
     if (period !== "all") numberOfDays = Number(period);
@@ -428,67 +423,22 @@ export const AppDashboardChart: React.PropsWithoutRef<typeof Card> = ({
       <div className="items center mt-10 flex flex-col justify-center gap-5">
         <div className="flex items-center justify-center gap-3 text-base font-semibold">
           <p>Revenue ($)</p>
-          <Switch
-            disabled={isDataLoading || isDataError}
-            onCheckedChange={(checked) =>
-              setType(checked ? "growth" : "revenue")
-            }
+          <SwitchButton
+            checked={isGrowthGraph}
+            setChecked={setIsGrowthGraph}
+            disabled={isDataLoading || isChangingNetwork}
           />
           <p>Growth (%)</p>
         </div>
-        <RadioGroup
-          disabled={isDataLoading || isDataError}
-          defaultValue="90"
-          onValueChange={(value) => setPeriod(value)}
+        <RadioButtonGroup
+          options={periodOptions}
+          value={period}
+          setValue={setPeriod}
+          disabled={isDataLoading || isChangingNetwork}
           className="flex items-center justify-center gap-3"
-        >
-          <RadioGroupItem
-            value="7"
-            id="7"
-            className="flex aspect-square h-12 w-12 items-center justify-center"
-          >
-            <label htmlFor="7" className="pointer-events-none">
-              7D
-            </label>
-          </RadioGroupItem>
-          <RadioGroupItem
-            value="30"
-            id="30"
-            className="flex aspect-square h-12 w-12 items-center justify-center"
-          >
-            <label htmlFor="30" className="pointer-events-none">
-              1M
-            </label>
-          </RadioGroupItem>
-          <RadioGroupItem
-            value="90"
-            id="90"
-            className="flex aspect-square h-12 w-12 items-center justify-center"
-          >
-            <label htmlFor="90" className="pointer-events-none">
-              3M
-            </label>
-          </RadioGroupItem>
-          <RadioGroupItem
-            value="365"
-            id="365"
-            className="flex aspect-square h-12 w-12 items-center justify-center"
-          >
-            <label htmlFor="365" className="pointer-events-none">
-              1Y
-            </label>
-          </RadioGroupItem>
-          <RadioGroupItem
-            value="all"
-            id="all"
-            className="flex aspect-square h-12 w-12 items-center justify-center"
-          >
-            <label htmlFor="all" className="pointer-events-none">
-              All
-            </label>
-          </RadioGroupItem>
-        </RadioGroup>
+          itemClassName="flex aspect-square h-12 w-12 items-center justify-center"
+        />
       </div>
     </article>
   );
-};
+}
