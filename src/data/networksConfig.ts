@@ -47,7 +47,9 @@ export const networkConfigsIndex: { [chain: string]: BaseNetworkConfig } = {
     order: 1,
     name: "Ethereum",
     chainId: ChainId.mainnet,
-    publicJsonRPCUrl: ["https://cloudflare-eth.com/v1/mainnet"],
+    publicJsonRPCUrl: [
+      "https://eth-mainnet.g.alchemy.com/v2/Ui4vv-Z6n-6lAyB9spGYJL1pV3MDNnTh",
+    ],
     publicJsonRPCWSUrl: "wss://eth-mainnet.alchemyapi.io/v2/demo",
     baseAssetName: "Ether",
     baseAssetSymbol: "ETH",
@@ -84,7 +86,7 @@ export const networkConfigsIndex: { [chain: string]: BaseNetworkConfig } = {
     name: "Arbitrum",
     chainId: ChainId.arbitrum_one,
     publicJsonRPCUrl: [
-      "https://arb1.arbitrum.io/rpc",
+      "https://arb-mainnet.g.alchemy.com/v2/Ui4vv-Z6n-6lAyB9spGYJL1pV3MDNnTh",
       "https://arbitrum-one.publicnode.com",
     ],
     publicJsonRPCWSUrl: "wss://arbitrum-one.publicnode.com",
