@@ -4,7 +4,7 @@ import {
   useReadLTokenFeesRateUd7x3,
   useSimulateLTokenSetFeesRate,
 } from "@/types";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import { parseUnits } from "viem";
 import { AdminBrick } from "../AdminBrick";
@@ -17,7 +17,7 @@ interface Props extends React.ComponentPropsWithRef<typeof Card> {
 
 export const AdminLTokenFeesRate: FC<Props> = ({ className, lTokenSymbol }) => {
   const underlyingTokenName = lTokenSymbol.slice(1);
-  const lTokenAddress = useContractAddress(lTokenSymbol);
+  const lTokenAddress = getContractAddress(lTokenSymbol);
   const { data: feesRate, queryKey } = useReadLTokenFeesRateUd7x3({
     address: lTokenAddress,
   });

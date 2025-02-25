@@ -8,7 +8,7 @@ import {
 } from "@/components/ui";
 import { Address, formatUnits, parseUnits } from "viem";
 import { UseSimulateContractReturnType } from "wagmi";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { useSimulateLdyStakingStake } from "@/types";
 import * as Slider from "@radix-ui/react-slider";
 import { StakeDurations } from "@/data/oldConstants";
@@ -29,7 +29,7 @@ export const AppStakingPane: FC<{
   rewardRate,
   totalWeightedStake,
 }) => {
-  const ldyStakingAddress = useContractAddress("LDYStaking");
+  const ldyStakingAddress = getContractAddress("LDYStaking");
 
   const inputEl = useRef<HTMLInputElement>(null);
   const [depositedAmount, setDepositedAmount] = useState(0n);

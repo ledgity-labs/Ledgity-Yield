@@ -7,7 +7,7 @@ import {
   Spinner,
   TxButton,
 } from "@/components/ui";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { FC, useEffect, useState, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
 import {
@@ -129,7 +129,7 @@ interface WithdrawalRequest {
 }
 
 export const AdminLTokenWithdrawalRequests: FC<Props> = ({ lTokenSymbol }) => {
-  const lTokenAddress = useContractAddress(lTokenSymbol);
+  const lTokenAddress = getContractAddress(lTokenSymbol);
   const { data: decimals } = useReadLTokenDecimals({ address: lTokenAddress });
   const [sorting, setSorting] = useState<SortingState>([
     {

@@ -19,7 +19,7 @@ import {
   useSimulateLTokenRequestWithdrawal,
 } from "@/types";
 import { formatUnits, parseEther, parseUnits, zeroAddress } from "viem";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { TxButton } from "../ui/TxButton";
 import {
   UseSimulateContractReturnType,
@@ -41,7 +41,7 @@ export const WithdrawDialog: FC<Props> = ({
   onOpenChange,
 }) => {
   const account = useAccount();
-  const lTokenAddress = useContractAddress(`L${underlyingSymbol}`);
+  const lTokenAddress = getContractAddress(`L${underlyingSymbol}`);
   const { data: decimals } = useReadLTokenDecimals({ address: lTokenAddress! });
   const { data: balance, queryKey } = useReadLTokenBalanceOf({
     address: lTokenAddress!,

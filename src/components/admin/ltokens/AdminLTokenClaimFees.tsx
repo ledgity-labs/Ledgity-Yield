@@ -4,7 +4,7 @@ import {
   useReadLTokenUnclaimedFees,
   useSimulateLTokenClaimFees,
 } from "@/types";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { FC, useEffect, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
 import { UseSimulateContractReturnType, useBlockNumber } from "wagmi";
@@ -15,7 +15,7 @@ interface Props extends React.ComponentPropsWithRef<typeof Card> {
 }
 
 export const AdminLTokenClaimFees: FC<Props> = ({ lTokenSymbol }) => {
-  const lTokenAddress = useContractAddress(lTokenSymbol);
+  const lTokenAddress = getContractAddress(lTokenSymbol);
   const { data: unclaimedFees, queryKey } = useReadLTokenUnclaimedFees({
     address: lTokenAddress,
   });

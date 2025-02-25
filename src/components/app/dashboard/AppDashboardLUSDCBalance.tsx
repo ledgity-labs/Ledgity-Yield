@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { useReadLTokenBalanceOf } from "@/types";
 import { WithdrawDialog } from "../WithdrawDialog";
 import { DepositDialog } from "../DepositDialog";
@@ -20,7 +20,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const AppDashboardLUSDCBalance: FC<Props> = (props) => {
   const account = useAccount();
-  const address = useContractAddress("LUSDC");
+  const address = getContractAddress("LUSDC");
   const { data: balance, queryKey } = useReadLTokenBalanceOf({
     address: address!,
     args: [account.address || zeroAddress],

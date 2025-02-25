@@ -1,5 +1,5 @@
 import { Address, Input, TxButton } from "@/components/ui";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import {
   UseSimulateContractReturnType,
@@ -27,7 +27,7 @@ export const AdminAddressSetter: FC<Props> = ({
   setterFunctionName,
   txButtonName = "Set",
 }) => {
-  const contractAddress = useContractAddress(contractName);
+  const contractAddress = getContractAddress(contractName);
   const contractAbi = useContractAbi(contractName);
   const { data: currentAddress, queryKey } = useReadContract({
     address: contractAddress,

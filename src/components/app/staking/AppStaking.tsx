@@ -3,7 +3,7 @@ import { FC, useEffect } from "react";
 import { AppStakingPane } from "./AppStakingPane";
 import { AppStakingDescription } from "./AppStakingDescription";
 import { AppStakingPools } from "./AppStakingPools";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { usePublicClient, useReadContract } from "wagmi";
 import { erc20Abi, zeroAddress } from "viem";
 import {
@@ -21,7 +21,7 @@ export const AppStaking: FC = () => {
   const queryClient = useQueryClient();
   const publicClient = usePublicClient();
   const ldySymbol = "LDY";
-  const ldyTokenAddress = useContractAddress(ldySymbol);
+  const ldyTokenAddress = getContractAddress(ldySymbol);
 
   const ldyBalance = useBalanceOf(ldyTokenAddress, currentAccount);
 

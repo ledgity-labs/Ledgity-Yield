@@ -1,7 +1,7 @@
 import { Card, Rate, TxButton } from "@/components/ui";
 import { RateInput } from "@/components/ui/RateInput";
 import { useReadLTokenGetApr, useSimulateLTokenSetApr } from "@/types";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import { parseUnits } from "viem";
 import { AdminBrick } from "../AdminBrick";
@@ -13,7 +13,7 @@ interface Props extends React.ComponentPropsWithRef<typeof Card> {
 }
 
 export const AdminLTokenAPR: FC<Props> = ({ className, lTokenSymbol }) => {
-  const lTokenAddress = useContractAddress(lTokenSymbol);
+  const lTokenAddress = getContractAddress(lTokenSymbol);
   const { data: apr, queryKey } = useReadLTokenGetApr({
     address: lTokenAddress,
   });

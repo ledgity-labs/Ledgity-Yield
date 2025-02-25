@@ -7,7 +7,7 @@ import {
   useSimulatePreMiningInstantUnlock,
   useSimulatePreMiningRequestUnlock,
 } from "@/types";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { UseSimulateContractReturnType, useAccount } from "wagmi";
 import { formatUnits, parseUnits, zeroAddress } from "viem";
 import { twMerge } from "tailwind-merge";
@@ -23,7 +23,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const AppPreMiningParticipate: FC<Props> = ({ className, ...props }) => {
   const account = useAccount();
-  const lTokenAddress = useContractAddress(`LUSDC`);
+  const lTokenAddress = getContractAddress(`LUSDC`);
 
   // Retrieve lock data
   const { data: lockData } = useReadPreMiningAccountsLocks({

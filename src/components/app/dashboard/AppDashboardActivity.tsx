@@ -33,7 +33,7 @@ import {
 import clsx from "clsx";
 import { Activity, LToken, execute } from "../../../../.graphclient";
 
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import {
   useReadLTokenDecimals,
   useReadLTokenWithdrawalQueue,
@@ -51,7 +51,7 @@ const CancelButton: FC<{
   requestId: bigint;
   amount: bigint;
 }> = ({ lTokenSymbol, requestId }) => {
-  const ltokenAddress = useContractAddress(lTokenSymbol);
+  const ltokenAddress = getContractAddress(lTokenSymbol);
   const { data: decimals } = useReadLTokenDecimals({
     address: ltokenAddress,
   });

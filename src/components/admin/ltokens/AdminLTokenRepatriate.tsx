@@ -13,7 +13,7 @@ import {
 } from "@/types";
 import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { erc20Abi, parseUnits, zeroAddress } from "viem";
 import {
   UseSimulateContractReturnType,
@@ -29,7 +29,7 @@ interface Props extends React.ComponentPropsWithRef<typeof Card> {
 
 export const AdminLTokenRepatriate: FC<Props> = ({ lTokenSymbol }) => {
   const account = useAccount();
-  const lTokenAddress = useContractAddress(lTokenSymbol);
+  const lTokenAddress = getContractAddress(lTokenSymbol);
   const { data: lTokenDecimals } = useReadLTokenDecimals({
     address: lTokenAddress,
   });

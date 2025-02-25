@@ -18,7 +18,7 @@ import {
   useReadLTokenUnderlying,
   useSimulateLTokenDeposit,
 } from "@/types";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { erc20Abi, parseUnits, zeroAddress } from "viem";
 import {
   UseSimulateContractReturnType,
@@ -40,7 +40,7 @@ export const DepositDialog: FC<Props> = ({
   onOpenChange,
 }) => {
   const account = useAccount();
-  const lTokenAddress = useContractAddress(`L${underlyingSymbol}`);
+  const lTokenAddress = getContractAddress(`L${underlyingSymbol}`);
   const { data: decimals } = useReadLTokenDecimals({ address: lTokenAddress! });
   const { data: underlyingAddress } = useReadLTokenUnderlying({
     address: lTokenAddress!,

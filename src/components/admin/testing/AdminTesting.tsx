@@ -1,6 +1,6 @@
 import { Address, Amount, AmountInput, Button, Input } from "@/components/ui";
 import { TxButton } from "@/components/ui/TxButton";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { useSimulateGenericErc20Mint } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChangeEvent, FC, useEffect, useMemo, useState } from "react";
@@ -26,7 +26,7 @@ const MintFakeToken: FC<{ contractName: string }> = ({
   ...props
 }) => {
   const account = useAccount();
-  const address = useContractAddress(contractName);
+  const address = getContractAddress(contractName);
   const { data: tokenSymbol } = useReadContract({
     abi: erc20Abi,
     functionName: "symbol",

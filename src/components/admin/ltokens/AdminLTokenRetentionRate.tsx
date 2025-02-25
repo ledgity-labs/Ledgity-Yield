@@ -4,7 +4,7 @@ import {
   useReadLTokenRetentionRateUd7x3,
   useSimulateLTokenSetRetentionRate,
 } from "@/types";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
 import { parseUnits } from "viem";
 import { AdminBrick } from "../AdminBrick";
@@ -20,7 +20,7 @@ export const AdminLTokenRetentionRate: FC<Props> = ({
   lTokenSymbol,
 }) => {
   const underlyingTokenName = lTokenSymbol.slice(1);
-  const lTokenAddress = useContractAddress(lTokenSymbol);
+  const lTokenAddress = getContractAddress(lTokenSymbol);
   const { data: retentionRate, queryKey } = useReadLTokenRetentionRateUd7x3({
     address: lTokenAddress,
   });

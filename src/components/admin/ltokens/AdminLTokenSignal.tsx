@@ -1,6 +1,6 @@
 import { Card, TxButton } from "@/components/ui";
 import { useSimulateLTokenSignalerSignalLToken } from "@/types";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { FC, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
 import { UseSimulateContractReturnType } from "wagmi";
@@ -10,7 +10,7 @@ interface Props extends React.ComponentPropsWithRef<typeof Card> {
 }
 
 export const AdminLTokenSignal: FC<Props> = ({ lTokenSymbol }) => {
-  const lTokenAddress = useContractAddress(lTokenSymbol);
+  const lTokenAddress = getContractAddress(lTokenSymbol);
   const preparation = useSimulateLTokenSignalerSignalLToken({
     args: [lTokenAddress!],
   });

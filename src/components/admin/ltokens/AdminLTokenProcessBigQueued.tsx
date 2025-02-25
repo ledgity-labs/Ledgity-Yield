@@ -6,7 +6,7 @@ import {
 } from "@/types";
 import { ChangeEvent, FC, useState, useMemo } from "react";
 import { AdminBrick } from "../AdminBrick";
-import { useContractAddress } from "@/hooks/useContractAddress";
+import { getContractAddress } from "@/functions/getContractAddress";
 import { UseSimulateContractReturnType } from "wagmi";
 
 interface Props extends React.ComponentPropsWithRef<typeof Card> {
@@ -14,7 +14,7 @@ interface Props extends React.ComponentPropsWithRef<typeof Card> {
 }
 
 export const AdminLTokenProcessBigQueued: FC<Props> = ({ lTokenSymbol }) => {
-  const lTokenAddress = useContractAddress(lTokenSymbol);
+  const lTokenAddress = getContractAddress(lTokenSymbol);
   const { data: underlyingAddress } = useReadLTokenUnderlying({
     address: lTokenAddress!,
   });
