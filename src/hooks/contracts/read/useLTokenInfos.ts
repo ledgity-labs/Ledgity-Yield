@@ -2,7 +2,6 @@
 import { useReadContracts } from "wagmi";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "@/hooks/utils/useLocalStorage";
-import { useWeb3Context } from "@/hooks/context/Web3ContextProvider";
 // Datas
 import { zeroAddress } from "viem";
 // Types

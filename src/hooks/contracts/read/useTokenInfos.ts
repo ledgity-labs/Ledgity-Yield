@@ -6,7 +6,7 @@ import { useLocalStorage } from "@/hooks/utils/useLocalStorage";
 // Data
 import { zeroAddress } from "viem";
 // Types
-import { TokenInfo } from "@/types";
+import { TokenInfo, genericErc20Abi } from "@/types";
 
 const NB_DATA_POINTS = 3;
 
@@ -41,14 +41,20 @@ export function useTokenInfos(
     return [
       {
         address,
+        abi: genericErc20Abi,
+        chainId: appChainId,
         functionName: "name",
       },
       {
         address,
-        functionName: "symbol",
+        abi: genericErc20Abi,
+        chainId: appChainId,
+        functionName: "symbdol",
       },
       {
         address,
+        abi: genericErc20Abi,
+        chainId: appChainId,
         functionName: "decimals",
       },
     ] as const;

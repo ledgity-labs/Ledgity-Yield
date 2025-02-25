@@ -1,8 +1,5 @@
 import { useWeb3Context } from "@/hooks/context/Web3ContextProvider";
 import { useReadGenericErc20BalanceOf } from "@/types";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { useBlockNumber } from "wagmi";
 import { Address, zeroAddress } from "viem";
 
 export function useBalanceOf(
@@ -10,19 +7,15 @@ export function useBalanceOf(
   account: Address | undefined,
 ): bigint {
   const { appChainId } = useWeb3Context();
-  const queryClient = useQueryClient();
 
-  const { data: blockNumber } = useBlockNumber({ watch: true });
-
-  const { data, queryKey } = useReadGenericErc20BalanceOf({
+  const { data } = useReadGenericErc20BalanceOf({
+    chainId: appChainId,
     address,
     args: [account || zeroAddress],
+    query: {
+      refetchInterval: 5 * 1000,
+    },
   });
-
-  useEffect(() => {
-    if (blockNumber && blockNumber % 2n === 0n)
-      queryClient.invalidateQueries({ queryKey });
-  }, [blockNumber, queryClient, account, appChainId]);
 
   return data || 0n;
 }
