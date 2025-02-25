@@ -7,7 +7,6 @@ import {
   ExecuteReturn,
   TransactionStatus,
 } from "@/types";
-import { useEffect, useState } from "react";
 import { Address, Hash, parseUnits } from "viem";
 
 export type ParamsStake = {

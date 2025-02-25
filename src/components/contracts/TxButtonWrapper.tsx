@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useReducer } from "react";
+import { useEffect, useCallback, useReducer } from "react";
 import { parseUnits, Address, Hash } from "viem";
 import { WalletIcon } from "@/components/icons/WalletIcon";
 import { ArrowTopRightIcon } from "@/components/icons/ArrowTopRightIcon";
@@ -15,7 +15,7 @@ import { UseCallInstance, ExecuteReturn } from "@/types";
 type ButtonConfig = {
   checkParams: (params: any) => string | undefined;
   makeInstance: () => UseCallInstance;
-  simulate: (
+  simulate?: (
     instance: UseCallInstance,
     params: any,
   ) => Promise<string | undefined>;
@@ -25,7 +25,7 @@ type ButtonConfig = {
 type ApprovalOperation = {
   instance: UseCallInstance;
   symbol: string;
-  simulate: () => Promise<string | undefined>;
+  simulate?: () => Promise<string | undefined>;
   execute: () => Promise<ExecuteReturn>;
 };
 
@@ -161,8 +161,8 @@ export function TxButtonWrapper({
   useEffect(() => {
     if (
       !txState.executedOnSuccess &&
-      currentInstance?.status === "success" &&
-      !txState.pendingApprove
+      !txState.pendingApprove &&
+      currentInstance?.status === "success"
     ) {
       onSuccess?.();
       dispatchTxState({ executedOnSuccess: true });

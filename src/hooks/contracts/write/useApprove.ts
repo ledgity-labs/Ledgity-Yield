@@ -6,7 +6,6 @@ import {
   useWriteGenericErc20Approve,
   TransactionStatus,
 } from "@/types";
-import { useEffect, useState } from "react";
 import { Address, Hash, parseUnits, zeroAddress } from "viem";
 
 export type ParamsApprove = {

@@ -64,6 +64,7 @@ export const DepositDialog: FC<Props> = ({
   const queryKeys = [queryKey];
   const { data: blockNumber } = useBlockNumber({ watch: true });
   const queryClient = useQueryClient();
+
   useEffect(() => {
     if (blockNumber && blockNumber % 5n === 0n)
       queryKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
