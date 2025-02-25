@@ -1,62 +1,50 @@
 "use client";
+
 import {
   Amount,
-  Card,
+  Button,
+  TokenLogo,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-  TokenLogo,
-  Button,
 } from "@/components/ui";
-import React, { FC, useEffect } from "react";
-import { twMerge } from "tailwind-merge";
 import { DepositDialog } from "../DepositDialog";
 import { WithdrawDialog } from "../WithdrawDialog";
-import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
-import { useContractAddress } from "@/hooks/useContractAddress";
-import {
-  useReadLTokenBalanceOf,
-  useReadLTokenDecimals,
-  useReadLTokenUnderlying,
-} from "@/types";
-import { useAccount, useBlockNumber } from "wagmi";
-import { zeroAddress } from "viem";
-import { useQueryClient } from "@tanstack/react-query";
+// Context
+import { useAppDataContext } from "@/hooks/context/AppDataContextProvider";
+// Types
+import { LTokenInfo } from "@/types";
 
-const LTokenBalance: FC<{ lTokenSymbol: string }> = ({
-  lTokenSymbol,
-  ...props
-}) => {
-  const account = useAccount();
-  const address = useContractAddress(lTokenSymbol);
-  const { data: balance, queryKey } = useReadLTokenBalanceOf({
-    address: address!,
-    args: [account.address || zeroAddress],
-  });
-  const { data: decimals } = useReadLTokenDecimals({ address: address! });
-  const underlyingSymbol = lTokenSymbol.slice(1);
+export function AppDashboardBalances({ className }: { className?: string }) {
+  const { lTokenInfosCurrentChain } = useAppDataContext();
 
-  // Refresh some data every 5 blocks
-  const queryKeys = [queryKey];
-  const { data: blockNumber } = useBlockNumber({ watch: true });
-  const queryClient = useQueryClient();
-  useEffect(() => {
-    if (blockNumber && blockNumber % 5n === 0n)
-      queryKeys.forEach((k) => queryClient.invalidateQueries({ queryKey: k }));
-  }, [blockNumber, ...queryKeys]);
+  return !Object.keys(lTokenInfosCurrentChain).length ? (
+    <p>No balances on this chain.</p>
+  ) : (
+    <ul className="flex h-full w-full flex-col gap-7">
+      {lTokenInfosCurrentChain.map((tokenInfo) => (
+        <LTokenBalance key={tokenInfo.name} tokenInfo={tokenInfo} />
+      ))}
+    </ul>
+  );
+}
+
+function LTokenBalance({ tokenInfo }: { tokenInfo: LTokenInfo }) {
+  const tokenSymbol = tokenInfo.symbol;
+  const underlyingSymbol = tokenSymbol.slice(1);
 
   return (
-    <li className="flex w-full gap-4 items-center justify-between" {...props}>
+    <li className="flex w-full gap-4 items-center justify-between">
       <div className="flex items-center gap-2 font-semibold text-fg/80">
-        <TokenLogo symbol={lTokenSymbol} size={30} />
-        {lTokenSymbol}
+        <TokenLogo symbol={tokenSymbol} size={30} />
+        {tokenSymbol}
       </div>
       <div className="flex items-center gap-2">
         <Amount
-          value={balance!}
-          decimals={decimals}
+          value={tokenInfo.balance}
+          decimals={tokenInfo.decimals}
           className="pr-2 font-semibold"
-          suffix={lTokenSymbol}
+          suffix={tokenSymbol}
           displaySymbol={false}
         />
         <Tooltip>
@@ -68,7 +56,7 @@ const LTokenBalance: FC<{ lTokenSymbol: string }> = ({
             </DepositDialog>
           </TooltipTrigger>
           <TooltipContent className="font-heading font-semibold text-bg">
-            Deposit {underlyingSymbol} against {lTokenSymbol}
+            Deposit {underlyingSymbol} against {tokenSymbol}
           </TooltipContent>
         </Tooltip>
 
@@ -81,25 +69,10 @@ const LTokenBalance: FC<{ lTokenSymbol: string }> = ({
             </WithdrawDialog>
           </TooltipTrigger>
           <TooltipContent className="font-heading font-semibold text-bg">
-            Withdraw {underlyingSymbol} from {lTokenSymbol}
+            Withdraw {underlyingSymbol} from {tokenSymbol}
           </TooltipContent>
         </Tooltip>
       </div>
     </li>
   );
-};
-export const AppDashboardBalances: React.PropsWithoutRef<typeof Card> = ({
-  className,
-}) => {
-  const lTokens = useAvailableLTokens();
-
-  if (lTokens.length == 0) return <p>No balances on this chain.</p>;
-  else
-    return (
-      <ul className="flex h-full w-full flex-col gap-7">
-        {lTokens.map((lToken) => (
-          <LTokenBalance key={lToken} lTokenSymbol={lToken} />
-        ))}
-      </ul>
-    );
-};
+}

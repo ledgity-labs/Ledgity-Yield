@@ -1,15 +1,9 @@
-import {
-  Address,
-  Amount,
-  AmountInput,
-  Button,
-  Card,
-  Input,
-} from "@/components/ui";
-import { useContractAddress } from "@/hooks/useContractAddress";
-import { ChangeEvent, FC, useEffect, useState, useMemo } from "react";
-import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
+import { Address, Amount, AmountInput, Button, Input } from "@/components/ui";
 import { TxButton } from "@/components/ui/TxButton";
+import { useContractAddress } from "@/hooks/useContractAddress";
+import { useSimulateGenericErc20Mint } from "@/types";
+import { useQueryClient } from "@tanstack/react-query";
+import { ChangeEvent, FC, useEffect, useMemo, useState } from "react";
 import {
   createTestClient,
   erc20Abi,
@@ -22,13 +16,10 @@ import {
   useAccount,
   useBlockNumber,
   useReadContract,
-  useSimulateContract,
 } from "wagmi";
-import { AdminMasonry } from "../AdminMasonry";
-import { AdminBrick } from "../AdminBrick";
 import { hardhat } from "wagmi/chains";
-import { useQueryClient } from "@tanstack/react-query";
-import { useSimulateGenericErc20Mint } from "@/types";
+import { AdminBrick } from "../AdminBrick";
+import { AdminMasonry } from "../AdminMasonry";
 
 const MintFakeToken: FC<{ contractName: string }> = ({
   contractName,
@@ -128,7 +119,6 @@ const MintFakeToken: FC<{ contractName: string }> = ({
   );
 };
 export const AdminTesting: FC = () => {
-  const lTokens = useAvailableLTokens();
   const [dayForwards, setDayForwards] = useState(0);
 
   const testClient = createTestClient({
@@ -147,9 +137,9 @@ export const AdminTesting: FC = () => {
           <br />
           Here are those for the current local network:
         </p>
-        {lTokens.map((lToken) => (
+        {/* {lTokens.map((lToken) => (
           <MintFakeToken key={lToken} contractName={lToken.slice(1)} />
-        ))}
+        ))} */}
       </AdminBrick>
       <AdminBrick title="LDY token">
         <p>

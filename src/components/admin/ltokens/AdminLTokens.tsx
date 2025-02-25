@@ -1,4 +1,3 @@
-import { FC, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -7,14 +6,15 @@ import {
   SelectValue,
   TokenLogo,
 } from "@/components/ui";
-import { useAvailableLTokens } from "@/hooks/useAvailableLTokens";
+import { useState } from "react";
 import { AdminLToken } from "./AdminLToken";
+// Context
+import { useAppDataContext } from "@/hooks/context/AppDataContextProvider";
 
-export const AdminLTokens: FC = () => {
-  const lTokens = useAvailableLTokens();
-  const [lToken, setLToken] = useState(
-    lTokens.length > 0 ? lTokens[0] : undefined,
-  );
+export function AdminLTokens() {
+  const { lTokenInfosCurrentChain } = useAppDataContext();
+  const [lToken, setLToken] = useState(lTokenInfosCurrentChain[0]?.name);
+
   return (
     <section className="flex flex-col gap-6 justify-center items-center">
       <Select
@@ -25,17 +25,18 @@ export const AdminLTokens: FC = () => {
           <SelectValue placeholder="No L-Tokens available" />
         </SelectTrigger>
         <SelectContent>
-          {lTokens.map((_lToken) => (
-            <SelectItem value={_lToken} key={_lToken}>
+          {lTokenInfosCurrentChain.map((token) => (
+            <SelectItem value={token.name} key={token.name}>
               <div className="flex justify-center items-center gap-[0.6rem]">
-                <TokenLogo symbol={_lToken} size={28} />
-                <p className="font-semibold">{_lToken}</p>
+                <TokenLogo symbol={token.name} size={28} />
+                <p className="font-semibold">{token.name}</p>
               </div>
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      {lToken && <AdminLToken lTokenSymbol={lToken} />}
+
+      <AdminLToken lTokenSymbol={lToken} />
     </section>
   );
-};
+}
