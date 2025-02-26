@@ -32,7 +32,7 @@ export function AppTabs({ tabParams }: { tabParams: TabParam[] }) {
     setMounted(true);
     const pathParts = window.location.pathname.split("/");
     const tabFromUrl = pathParts[pathParts.length - 1];
-    if (tabParams.some((t) => t.tab === tabFromUrl && !t.isHidden)) {
+    if (tabParams.some((t) => t.tab === tabFromUrl)) {
       setCurrentTab(tabFromUrl);
     }
   }, [tabParams]);
@@ -41,11 +41,6 @@ export function AppTabs({ tabParams }: { tabParams: TabParam[] }) {
     history.pushState({}, name, `/app/${name}`);
     setCurrentTab(name);
   }
-
-  const activeTabs = useMemo(
-    () => tabParams.filter((tab) => !tab.isHidden),
-    [tabParams],
-  );
 
   if (!mounted) {
     return (
@@ -102,23 +97,27 @@ export function AppTabs({ tabParams }: { tabParams: TabParam[] }) {
       </Link>
 
       <TabsList className="mb-6 mt-12 sm:w-fit w-[250px]">
-        {activeTabs.map((tab) => (
-          <TabsTrigger key={tab.tab} value={tab.tab}>
-            {tab.title}
-            {tab.tab === "staking" && (
-              <div
-                className={twMerge(
-                  "absolute right-[20%] -top-[2rem] z-20 flex items-center justify-center gap-1 rounded-xl bg-gradient-to-bl from-[#20456c]/50 to-[red] px-[0.47rem] py-[0.04rem] text-center text-[0.8rem] font-bold text-white",
-                  currentTab === "staking" && "opacity-50 hover:opacity-100",
-                )}
-              >
-                <i className="ri-fire-fill text-x animate-pulse" />
-                Hot
-                <i className="ri-arrow-down-s-fill absolute -bottom-[1.33rem] left-1.5 -z-10 text-3xl text-[#20456c]/90"></i>
-              </div>
-            )}
-          </TabsTrigger>
-        ))}
+        {tabParams.map((tab, i) =>
+          tab.isHidden ? (
+            <></>
+          ) : (
+            <TabsTrigger key={i} value={tab.tab}>
+              {tab.title}
+              {tab.tab === "staking" && (
+                <div
+                  className={twMerge(
+                    "absolute right-[20%] -top-[2rem] z-20 flex items-center justify-center gap-1 rounded-xl bg-gradient-to-bl from-[#20456c]/50 to-[red] px-[0.47rem] py-[0.04rem] text-center text-[0.8rem] font-bold text-white",
+                    currentTab === "staking" && "opacity-50 hover:opacity-100",
+                  )}
+                >
+                  <i className="ri-fire-fill text-x animate-pulse" />
+                  Hot
+                  <i className="ri-arrow-down-s-fill absolute -bottom-[1.33rem] left-1.5 -z-10 text-3xl text-[#20456c]/90"></i>
+                </div>
+              )}
+            </TabsTrigger>
+          ),
+        )}
       </TabsList>
 
       <div className="sm:px-5 max-w-[100vw]">
